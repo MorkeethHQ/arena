@@ -41,9 +41,10 @@ def discover_chrome(explicit: str | None) -> str:
     candidates = [
         explicit,
         os.environ.get("BOUT_CHROME"),
-        "google-chrome",
+        "google-chrome-stable",
         "chromium",
         "chromium-browser",
+        "google-chrome",
     ]
     for candidate in candidates:
         if candidate and shutil.which(candidate):
@@ -88,7 +89,12 @@ def screenshot(chrome: str, source: Path, target: Path) -> None:
             f"--screenshot={target.resolve()}",
             file_url(source),
         ]
-        process = subprocess.run(command, text=True, capture_output=True, check=False)
+        try:
+            process = subprocess.run(
+                command, text=True, capture_output=True, check=False, timeout=30
+            )
+        except subprocess.TimeoutExpired:
+            fail(f"Chrome timed out rendering {source}")
     if process.returncode:
         detail = (process.stderr or process.stdout).strip()
         fail(f"Chrome failed rendering {source}: {detail}")
