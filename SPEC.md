@@ -48,14 +48,20 @@ The judge never edits submissions and never hardcodes a fixture winner.
 
 ## Public result kit
 
-The default show kit targets 1200×630 and contains fighter assets, a
-side-by-side comparison, and a result card. Phase 1 ships offline HTML templates
-and fixture cards only; PNG rendering is deliberately deferred. Public cards
-may show the task, rubric totals, decision, and concise tool/process summaries,
-but not private traces.
+The show kit is a deterministic 1200×630 set containing PNG fighter assets for
+HTML submissions, an offline side-by-side HTML/PNG pair, and an offline result
+HTML/PNG pair. `scripts/render_card.py` runs the judge first, renders with a
+local Chrome/Chromium at device scale 1, validates every PNG’s dimensions, and
+records all kit paths under `artifacts.public_kit` in `result.json`. Templates
+carry `bout-card-size=1200x630` metadata and use system fonts without CDNs.
+
+Public cards may show the task, rubric totals, decision, and concise
+tool/process summaries, but not private traces. X output is draft-only: no
+share occurs without an explicit human approval gate, and this repository has
+no posting code.
 
 ## Current boundary
 
 This repository does not claim a published Grok template, deployed service,
-leaderboard, X automation, OpenClaw/Hermes adapter, or PNG pipeline. Live
-referee messaging and publish approval remain outside Phase 0/1.
+leaderboard, X automation, OpenClaw/Hermes adapter, Elo site, or live tape.
+Live referee messaging and publish approval remain outside the shipped phases.

@@ -96,6 +96,27 @@
           "$ref": "#/$defs/result"
         }
       ]
+    },
+    "show": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roast": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fighter_captions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     }
   },
   "$defs": {

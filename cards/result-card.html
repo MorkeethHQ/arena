@@ -2,21 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=1200">
+  <meta name="bout-card-size" content="1200x630">
   <title>{{BOUT_ID}} result</title>
   <style>
+    :root{--bg:#0b0b0d;--ink:#f5f1e8;--mute:#918d87;--gold:#d6aa4b;--red:#eb1d33}
     *{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
-    body{padding:44px;background:#09090b;color:#f5f1e8;font:16px system-ui,sans-serif}
-    .meta{color:#d6aa4b;text-transform:uppercase;letter-spacing:.18em;font-weight:800}
-    h1{margin:34px 0;font-size:68px}.fighters{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-    .fighter{padding:26px;border:2px solid #34343a}.winner{border-color:#d6aa4b}
-    .reason{margin-top:30px;padding:18px;background:#df2638;color:#fff;font-size:21px;font-weight:750}
+    body{background:linear-gradient(145deg,#0b0b0d,#111116);color:var(--ink);
+      font-family:Arial,"Helvetica Neue",system-ui,sans-serif}
+    .card{position:relative;width:1200px;height:630px;padding:38px 40px}
+    .meta{color:var(--gold);font-size:13px;font-weight:800;letter-spacing:.25em;text-transform:uppercase}
+    h1{margin:20px 0 8px;font-size:62px;line-height:1;font-weight:900;letter-spacing:-.04em}
+    .sub{color:var(--mute);font-size:18px}
+    .fighters{position:absolute;top:228px;left:40px;right:40px;display:grid;
+      grid-template-columns:1fr 80px 1fr;align-items:center}
+    .fighter{text-align:center}.fighter h2{margin:0;font-size:46px;line-height:1;font-weight:900}
+    .fighter.winner h2{color:var(--gold)}
+    .fighter p{margin:13px 0 0;color:var(--mute);font-size:12px;font-weight:700;
+      letter-spacing:.20em;text-transform:uppercase}
+    .vs{text-align:center;color:var(--red);font-size:17px;font-weight:900;text-transform:uppercase}
+    .reason{position:absolute;left:40px;right:40px;bottom:80px;padding:17px 20px;
+      background:var(--red);color:#fff;text-align:center;font-size:20px;font-weight:800}
+    footer{position:absolute;left:40px;right:40px;bottom:31px;display:flex;
+      justify-content:space-between;color:#696660;font-size:11px;letter-spacing:.17em;text-transform:uppercase}
   </style>
 </head>
 <body>
-  <div class="meta">{{BOUT_ID}} · {{LANE}} lane · official result</div>
-  <h1>{{HEADLINE}}</h1>
-  <main class="fighters">{{FIGHTERS}}</main>
-  <div class="reason">{{REASON}}</div>
+  <main class="card" data-width="1200" data-height="630">
+    <div class="meta">{{BOUT_ID}} · {{LANE}} lane · official result</div>
+    <h1>{{HEADLINE}}</h1>
+    <div class="sub">{{SHOW_TITLE}} · Rubric {{RUBRIC_SCORE}} · {{TIEBREAK}}</div>
+    <section class="fighters">
+      <div class="fighter {{LEFT_WINNER}}"><h2>{{LEFT_NAME}}</h2><p>{{LEFT_CAPTION}}</p></div>
+      <div class="vs">vs</div>
+      <div class="fighter {{RIGHT_WINNER}}"><h2>{{RIGHT_NAME}}</h2><p>{{RIGHT_CAPTION}}</p></div>
+    </section>
+    <div class="reason">{{ROAST}}</div>
+    <footer><span>Bout</span><span>1200 × 630</span></footer>
+  </main>
 </body>
 </html>

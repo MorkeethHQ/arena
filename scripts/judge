@@ -247,24 +247,30 @@ def render_card(result: dict[str, Any]) -> str:
         if result["decision"]["status"] == "double_dq"
         else "Vibe vote required"
     )
-    fighter_markup = "".join(
-        f'<section class="fighter {"winner" if fighter["id"] == winner_id else ""}">'
-        f"<h2>{html.escape(fighter['name'])}</h2>"
-        f"<p>{fighter['passes']}/{fighter['total_checks']} rubric · "
-        f"{'DQ' if fighter['dq'] else 'eligible'}</p></section>"
-        for fighter in fighters
-    )
+    show = result.get("show", {})
+    captions = show.get("fighter_captions", {})
+    score = "–".join(str(fighter["passes"]) for fighter in fighters)
+    criterion = result["decision"]["tiebreak"]["criterion"].replace("_", " ")
     template_path = Path(__file__).resolve().parents[1] / "cards" / "result-card.html"
     try:
         template = template_path.read_text(encoding="utf-8")
     except OSError as exc:
         fail(f"cannot read result-card template: {exc}")
+    left, right = fighters
     replacements = {
         "{{BOUT_ID}}": html.escape(result["bout_id"]),
         "{{LANE}}": html.escape(result["lane"]),
         "{{HEADLINE}}": html.escape(headline),
-        "{{FIGHTERS}}": fighter_markup,
-        "{{REASON}}": html.escape(result["decision"]["reason"].replace("_", " ")),
+        "{{SHOW_TITLE}}": html.escape(show.get("title", "Sealed dual meet")),
+        "{{RUBRIC_SCORE}}": score,
+        "{{TIEBREAK}}": html.escape(criterion),
+        "{{LEFT_NAME}}": html.escape(left["name"]),
+        "{{RIGHT_NAME}}": html.escape(right["name"]),
+        "{{LEFT_CAPTION}}": html.escape(captions.get(left["id"], f"{left['passes']} rubric passes")),
+        "{{RIGHT_CAPTION}}": html.escape(captions.get(right["id"], f"{right['passes']} rubric passes")),
+        "{{LEFT_WINNER}}": "winner" if left["id"] == winner_id else "",
+        "{{RIGHT_WINNER}}": "winner" if right["id"] == winner_id else "",
+        "{{ROAST}}": html.escape(show.get("roast", result["decision"]["reason"].replace("_", " "))),
     }
     for token, value in replacements.items():
         template = template.replace(token, value)
@@ -325,15 +331,30 @@ def judge(brief_path: Path, output_dir: Path | None = None) -> tuple[dict[str, A
     output_dir.mkdir(parents=True, exist_ok=True)
     result_path = output_dir / "result.json"
     card_path = output_dir / "result-card.html"
+    cards_dir = (base / "cards").resolve()
+    fighter_assets = {
+        fighter["id"]: str(cards_dir / f"{Path(fighter['submission_path']).stem}.png")
+        for fighter in bout["fighters"]
+        if Path(fighter["submission_path"]).suffix.lower() in {".html", ".htm"}
+    }
     result = {
         "bout_id": bout["id"],
         "lane": bout["lane"],
         "clock_minutes": bout["clock_minutes"],
+        "source_bout_json": str(brief_path),
+        "show": bout.get("show", {}),
         "fighters": fighter_results,
         "decision": decision,
         "artifacts": {
             "result_json": str(result_path),
             "result_card_html": str(card_path),
+            "public_kit": {
+                "fighter_assets": fighter_assets,
+                "side_by_side_html": str(cards_dir / "side-by-side.html"),
+                "side_by_side_png": str(cards_dir / "side-by-side.png"),
+                "result_card_html": str(cards_dir / "result.html"),
+                "result_card_png": str(cards_dir / "result.png")
+            },
         },
     }
     result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")

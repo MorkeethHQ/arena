@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 JUDGE = ROOT / "scripts" / "judge"
+RENDERER = ROOT / "scripts" / "render_card.py"
 
 
 class FixtureSmokeTest(unittest.TestCase):
@@ -38,12 +39,33 @@ class FixtureSmokeTest(unittest.TestCase):
                 self.assertEqual(result["decision"]["status"], expected["status"])
                 self.assertEqual(result["decision"]["winner"], expected["winner"])
                 self.assertNotIn("{{", card_path.read_text(encoding="utf-8"))
+                public_kit = result["artifacts"]["public_kit"]
+                self.assertTrue(public_kit["result_card_html"].endswith("/cards/result.html"))
+                self.assertTrue(public_kit["side_by_side_png"].endswith("/cards/side-by-side.png"))
                 for fighter in result["fighters"]:
                     self.assertTrue(fighter["artifact"]["opens"])
                     self.assertFalse(fighter["dq"], fighter["dq_reasons"])
                     self.assertEqual(
                         fighter["passes"], expected["rubric_passes"][fighter["id"]]
                     )
+
+    def test_render_dry_run_validates_fixed_templates(self):
+        process = subprocess.run(
+            [
+                sys.executable,
+                str(RENDERER),
+                str(ROOT / "examples" / "BOUT-002" / "bout.json"),
+                "--dry-run",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(process.returncode, 0, process.stderr)
+        plan = json.loads(process.stdout)
+        self.assertTrue(plan["templates_valid"])
+        self.assertEqual(plan["dimensions"], "1200x630")
 
 
 if __name__ == "__main__":

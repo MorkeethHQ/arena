@@ -67,5 +67,13 @@
     "criterion": "timeline_hook",
     "score_sheet": "score-sheet.json"
   },
+  "show": {
+    "title": "Assistants Go to War",
+    "roast": "Poster lane is a timeline sport. Ink’s card reads at scroll speed.",
+    "fighter_captions": {
+      "iron": "Clerk vs Anvil",
+      "ink": "Rook vs Pyre"
+    }
+  },
   "result": null
 }
