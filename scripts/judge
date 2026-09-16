@@ -9,7 +9,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 
 EVALUATORS = {
@@ -22,7 +22,7 @@ EVALUATORS = {
 }
 
 
-def fail(message: str) -> "NoReturn":
+def fail(message: str) -> NoReturn:
     raise ValueError(message)
 
 
@@ -254,22 +254,21 @@ def render_card(result: dict[str, Any]) -> str:
         f"{'DQ' if fighter['dq'] else 'eligible'}</p></section>"
         for fighter in fighters
     )
-    return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>{html.escape(result['bout_id'])} result</title>
-<style>
-*{{box-sizing:border-box}}html,body{{margin:0;width:1200px;height:630px;overflow:hidden}}
-body{{background:#09090b;color:#f5f1e8;font:16px system-ui,sans-serif;padding:44px}}
-.meta{{color:#d6aa4b;text-transform:uppercase;letter-spacing:.18em;font-weight:800}}
-h1{{font-size:68px;margin:32px 0}}.match{{display:grid;grid-template-columns:1fr 1fr;gap:24px}}
-.fighter{{border:2px solid #34343a;padding:26px}}.fighter.winner{{border-color:#d6aa4b}}
-h2{{font-size:42px;margin:0 0 8px}}p{{color:#aaa5a0}}.reason{{margin-top:30px;background:#df2638;
-color:white;padding:18px;font-size:21px;font-weight:750}}footer{{margin-top:24px;color:#777}}
-</style></head><body><div class="meta">{html.escape(result['bout_id'])} · {html.escape(result['lane'])} lane · official result</div>
-<h1>{html.escape(headline)}</h1><main class="match">{fighter_markup}</main>
-<div class="reason">{html.escape(result['decision']['reason'].replace('_', ' '))}</div>
-<footer>Rubric before vibes · artifact or DQ</footer></body></html>
-"""
+    template_path = Path(__file__).resolve().parents[1] / "cards" / "result-card.html"
+    try:
+        template = template_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read result-card template: {exc}")
+    replacements = {
+        "{{BOUT_ID}}": html.escape(result["bout_id"]),
+        "{{LANE}}": html.escape(result["lane"]),
+        "{{HEADLINE}}": html.escape(headline),
+        "{{FIGHTERS}}": fighter_markup,
+        "{{REASON}}": html.escape(result["decision"]["reason"].replace("_", " ")),
+    }
+    for token, value in replacements.items():
+        template = template.replace(token, value)
+    return template
 
 
 def judge(brief_path: Path, output_dir: Path | None = None) -> tuple[dict[str, Any], Path, Path]:
@@ -308,6 +307,11 @@ def judge(brief_path: Path, output_dir: Path | None = None) -> tuple[dict[str, A
                 "id": fighter["id"],
                 "name": fighter["name"],
                 "submission_path": fighter["submission_path"],
+                "artifact": {
+                    "path": str(artifact_path),
+                    "opens": text is not None,
+                    "evidence": open_evidence,
+                },
                 "dq": bool(dq_reasons),
                 "dq_reasons": dq_reasons,
                 "passes": sum(check["pass"] for check in checks),

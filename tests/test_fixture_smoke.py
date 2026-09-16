@@ -37,7 +37,9 @@ class FixtureSmokeTest(unittest.TestCase):
                 self.assertEqual(summary["winner"], expected["winner"])
                 self.assertEqual(result["decision"]["status"], expected["status"])
                 self.assertEqual(result["decision"]["winner"], expected["winner"])
+                self.assertNotIn("{{", card_path.read_text(encoding="utf-8"))
                 for fighter in result["fighters"]:
+                    self.assertTrue(fighter["artifact"]["opens"])
                     self.assertFalse(fighter["dq"], fighter["dq_reasons"])
                     self.assertEqual(
                         fighter["passes"], expected["rubric_passes"][fighter["id"]]
