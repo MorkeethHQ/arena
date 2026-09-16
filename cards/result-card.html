@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>{{BOUT_ID}} result</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+    body{padding:44px;background:#09090b;color:#f5f1e8;font:16px system-ui,sans-serif}
+    .meta{color:#d6aa4b;text-transform:uppercase;letter-spacing:.18em;font-weight:800}
+    h1{margin:34px 0;font-size:68px}.fighters{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .fighter{padding:26px;border:2px solid #34343a}.winner{border-color:#d6aa4b}
+    .reason{margin-top:30px;padding:18px;background:#df2638;color:#fff;font-size:21px;font-weight:750}
+  </style>
+</head>
+<body>
+  <div class="meta">{{BOUT_ID}} · {{LANE}} lane · official result</div>
+  <h1>{{HEADLINE}}</h1>
+  <main class="fighters">{{FIGHTERS}}</main>
+  <div class="reason">{{REASON}}</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sealed Bout score sheet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bout_id", "rubric", "tiebreak"],
+  "properties": {
+    "bout_id": {
+      "type": "string",
+      "pattern": "^BOUT-[0-9]{3,}$"
+    },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pass", "evidence"],
+          "properties": {
+            "pass": { "type": "boolean" },
+            "evidence": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "tiebreak": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["score", "evidence"],
+        "properties": {
+          "score": { "type": "number" },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

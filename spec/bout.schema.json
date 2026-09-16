@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MorkeethHQ/bout/blob/main/spec/bout.schema.json",
+  "title": "Bout sealed brief",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "lane",
+    "clock_minutes",
+    "fighters",
+    "sealed_task",
+    "submission_paths",
+    "rubric_checks",
+    "tiebreak",
+    "result"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^BOUT-[0-9]{3,}$"
+    },
+    "lane": {
+      "enum": ["Ship", "Brief", "Ops", "Poster"]
+    },
+    "clock_minutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fighters": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "submission_path", "claim"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "submission_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "sealed_task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "submission_paths": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "rubric_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/rubricCheck"
+      }
+    },
+    "tiebreak": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterion", "score_sheet"],
+      "properties": {
+        "criterion": {
+          "enum": ["clearer_hierarchy", "timeline_hook"]
+        },
+        "score_sheet": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "result": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/result"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "rubricCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "evaluator", "dq_on_fail"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evaluator": {
+          "enum": [
+            "file_opens",
+            "contains_all",
+            "no_external_assets",
+            "css_dimensions",
+            "claim_present",
+            "manual"
+          ]
+        },
+        "dq_on_fail": {
+          "type": "boolean"
+        },
+        "params": {
+          "type": "object"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "enum": ["winner", "double_dq", "vibe_vote_required"]
+        },
+        "winner": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Assistants Go to War · Share Card</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1200px;height:630px;overflow:hidden;background:#070708}
+  .board{
+    width:1200px;height:630px;
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 120%, #3a0a12 0%, transparent 55%),
+      linear-gradient(135deg, #0c0c0e 0%, #12141a 45%, #0a0a0c 100%);
+    color:#f4efe6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  .board::before{
+    content:"";position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 47px, rgba(255,255,255,.03) 48px),
+      repeating-linear-gradient(90deg, transparent, transparent 47px, rgba(255,255,255,.03) 48px);
+    pointer-events:none;
+  }
+  .frame{position:absolute;inset:18px;border:2px solid #d4a84b;opacity:.85}
+  .frame::after{content:"";position:absolute;inset:6px;border:1px solid rgba(225,29,46,.55)}
+  .top{
+    position:absolute;top:36px;left:40px;right:40px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:13px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;
+  }
+  .top .tag{color:#d4a84b}
+  .top .clock{color:#e11d2e;background:rgba(225,29,46,.12);padding:8px 14px;border:1px solid rgba(225,29,46,.45)}
+  .kicker{
+    position:absolute;top:96px;left:0;right:0;text-align:center;
+    font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:#9a948a;font-weight:600;
+  }
+  h1{
+    position:absolute;top:128px;left:40px;right:40px;text-align:center;
+    font-size:72px;line-height:.95;font-weight:900;letter-spacing:-.03em;
+    text-transform:uppercase;
+  }
+  h1 span{display:block;color:#e11d2e}
+  .match{
+    position:absolute;top:310px;left:40px;right:40px;
+    display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;gap:12px;
+  }
+  .fighter{text-align:center}
+  .fighter .name{font-size:48px;font-weight:900;letter-spacing:-.02em;line-height:1}
+  .fighter .role{margin-top:10px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#9a948a}
+  .left .name{color:#f4efe6}
+  .right .name{color:#d4a84b}
+  .vs{
+    text-align:center;font-size:22px;font-weight:900;letter-spacing:.2em;color:#e11d2e;
+  }
+  .roast{
+    position:absolute;left:40px;right:40px;bottom:78px;
+    background:#e11d2e;color:#fff;padding:16px 22px;
+    font-size:20px;font-weight:800;letter-spacing:.01em;text-align:center;line-height:1.25;
+  }
+  .foot{
+    position:absolute;left:40px;right:40px;bottom:28px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6e6a63;
+  }
+  .foot .credit{color:#9a948a}
+</style>
+</head>
+<body>
+  <div class="board" id="artboard">
+    <div class="frame" aria-hidden="true"></div>
+    <div class="top">
+      <span class="tag">Sealed dual meet · Personal AI</span>
+      <span class="clock">Round 1 · 12:00</span>
+    </div>
+    <div class="kicker">Tonight only · No connectors · Artifact or DQ</div>
+    <h1>Assistants<br><span>Go to War</span></h1>
+    <div class="match">
+      <div class="fighter left">
+        <div class="name">CLERK</div>
+        <div class="role">Blue corner · Briefs</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="fighter right">
+        <div class="name">ANVIL</div>
+        <div class="role">Red corner · Ships</div>
+      </div>
+    </div>
+    <p class="roast">Clerk files the brief. Anvil ships the belt. Same clock — only one file opens.</p>
+    <div class="foot">
+      <span>1200 × 630 · Offline assets only</span>
+      <span class="credit">Poster · Iron</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "id": "BOUT-002",
+  "lane": "Poster",
+  "clock_minutes": 12,
+  "fighters": [
+    {
+      "id": "iron",
+      "name": "Iron",
+      "submission_path": "submissions/Iron-poster.html",
+      "claim": ""
+    },
+    {
+      "id": "ink",
+      "name": "Ink",
+      "submission_path": "submissions/Ink-poster.html",
+      "claim": ""
+    }
+  ],
+  "sealed_task": "Build one single-file 1200×630 HTML poster for a fictional personal-AI dual meet titled “Assistants Go to War”.",
+  "submission_paths": [
+    "submissions/Iron-poster.html",
+    "submissions/Ink-poster.html"
+  ],
+  "rubric_checks": [
+    {
+      "id": "artboard",
+      "description": "File opens and the root artboard is exactly 1200×630 CSS pixels.",
+      "evaluator": "css_dimensions",
+      "dq_on_fail": true,
+      "params": {
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "id": "required_copy",
+      "description": "Readable title, two invented fighter names, and round or clock mark.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "roast_strip",
+      "description": "Contains one mean-line roast strip.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "offline_assets",
+      "description": "Uses no external network assets, tracking, or remote fonts.",
+      "evaluator": "no_external_assets",
+      "dq_on_fail": true
+    },
+    {
+      "id": "poster_hierarchy",
+      "description": "Reads as a poster from two meters or on a phone timeline.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "reply_shape",
+      "description": "Reply supplied the absolute path and one-sentence claim.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    }
+  ],
+  "tiebreak": {
+    "criterion": "timeline_hook",
+    "score_sheet": "score-sheet.json"
+  },
+  "result": null
+}

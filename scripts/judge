@@ -1,0 +1,365 @@
+#!/usr/bin/env python3
+"""Offline Bout judge: artifact checks, rubric order, tiebreak, and result kit."""
+
+from __future__ import annotations
+
+import argparse
+import html
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+
+EVALUATORS = {
+    "file_opens",
+    "contains_all",
+    "no_external_assets",
+    "css_dimensions",
+    "claim_present",
+    "manual",
+}
+
+
+def fail(message: str) -> "NoReturn":
+    raise ValueError(message)
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        fail(f"cannot read JSON {path}: {exc}")
+    if not isinstance(value, dict):
+        fail(f"{path} must contain a JSON object")
+    return value
+
+
+def validate_bout(bout: dict[str, Any]) -> None:
+    required = {
+        "id",
+        "lane",
+        "clock_minutes",
+        "fighters",
+        "sealed_task",
+        "submission_paths",
+        "rubric_checks",
+        "tiebreak",
+        "result",
+    }
+    missing = sorted(required - bout.keys())
+    if missing:
+        fail(f"bout is missing required fields: {', '.join(missing)}")
+    if not re.fullmatch(r"BOUT-\d{3,}", str(bout["id"])):
+        fail("id must match BOUT-NNN")
+    if bout["lane"] not in {"Ship", "Brief", "Ops", "Poster"}:
+        fail("lane must be Ship, Brief, Ops, or Poster")
+    if not isinstance(bout["clock_minutes"], int) or bout["clock_minutes"] < 1:
+        fail("clock_minutes must be a positive integer")
+    fighters = bout["fighters"]
+    if not isinstance(fighters, list) or len(fighters) != 2:
+        fail("fighters must contain exactly two entries")
+    ids: set[str] = set()
+    paths: list[str] = []
+    for fighter in fighters:
+        if not isinstance(fighter, dict):
+            fail("each fighter must be an object")
+        for key in ("id", "name", "submission_path", "claim"):
+            if key not in fighter or not isinstance(fighter[key], str):
+                fail(f"fighter field {key} must be a string")
+        if fighter["id"] in ids:
+            fail("fighter ids must be unique")
+        ids.add(fighter["id"])
+        paths.append(fighter["submission_path"])
+    if bout["submission_paths"] != paths:
+        fail("submission_paths must match fighter submission_path values in order")
+    checks = bout["rubric_checks"]
+    if not isinstance(checks, list) or not checks:
+        fail("rubric_checks must be a non-empty array")
+    check_ids: set[str] = set()
+    for check in checks:
+        if not isinstance(check, dict):
+            fail("each rubric check must be an object")
+        for key in ("id", "description", "evaluator", "dq_on_fail"):
+            if key not in check:
+                fail(f"rubric check is missing {key}")
+        if check["id"] in check_ids:
+            fail(f"duplicate rubric check id: {check['id']}")
+        check_ids.add(check["id"])
+        if check["evaluator"] not in EVALUATORS:
+            fail(f"unsupported evaluator: {check['evaluator']}")
+        if not isinstance(check["dq_on_fail"], bool):
+            fail(f"dq_on_fail must be boolean for {check['id']}")
+    tiebreak = bout["tiebreak"]
+    expected = "timeline_hook" if bout["lane"] == "Poster" else "clearer_hierarchy"
+    if not isinstance(tiebreak, dict) or tiebreak.get("criterion") != expected:
+        fail(f"{bout['lane']} tiebreak must be {expected}")
+    if bout["result"] is not None:
+        fail("a sealed brief must have result set to null; judge output is separate")
+
+
+def read_artifact(path: Path) -> tuple[str | None, str]:
+    if not path.is_file():
+        return None, f"missing file: {path}"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        return None, f"unreadable file: {exc}"
+    if not text.strip():
+        return None, "artifact is empty"
+    if path.suffix.lower() in {".html", ".htm"}:
+        lower = text.lower()
+        if "<html" not in lower or "</html>" not in lower:
+            return None, "HTML artifact lacks an html root"
+    return text, "file exists, decodes as UTF-8, and has an openable document root"
+
+
+def manual_observation(
+    sheet: dict[str, Any], fighter_id: str, check_id: str
+) -> tuple[bool, str]:
+    observation = sheet.get("rubric", {}).get(fighter_id, {}).get(check_id)
+    if not isinstance(observation, dict):
+        fail(f"missing sealed observation for {fighter_id}.{check_id}")
+    passed = observation.get("pass")
+    evidence = observation.get("evidence")
+    if not isinstance(passed, bool) or not isinstance(evidence, str) or not evidence:
+        fail(f"invalid sealed observation for {fighter_id}.{check_id}")
+    return passed, evidence
+
+
+def evaluate(
+    check: dict[str, Any],
+    fighter: dict[str, str],
+    text: str | None,
+    open_evidence: str,
+    sheet: dict[str, Any],
+) -> tuple[bool, str]:
+    kind = check["evaluator"]
+    params = check.get("params", {})
+    if kind == "file_opens":
+        return text is not None, open_evidence
+    if text is None and kind != "claim_present":
+        return False, "artifact could not be evaluated because it did not open"
+    if kind == "claim_present":
+        claim = fighter["claim"].strip()
+        return bool(claim), "one-sentence claim recorded" if claim else "claim is empty"
+    if kind == "contains_all":
+        terms = params.get("terms", [])
+        if not isinstance(terms, list) or not all(isinstance(term, str) for term in terms):
+            fail(f"contains_all params.terms must be an array of strings for {check['id']}")
+        missing = [term for term in terms if term.casefold() not in text.casefold()]
+        return not missing, (
+            f"found required terms: {', '.join(terms)}"
+            if not missing
+            else f"missing required terms: {', '.join(missing)}"
+        )
+    if kind == "no_external_assets":
+        patterns = [
+            r"""(?:src|href)\s*=\s*["']\s*(?:https?:)?//""",
+            r"""@import\s+(?:url\()?["']?\s*(?:https?:)?//""",
+            r"""url\(\s*["']?\s*(?:https?:)?//""",
+        ]
+        match = next((pattern for pattern in patterns if re.search(pattern, text, re.I)), None)
+        return match is None, (
+            "no HTTP(S) asset references found"
+            if match is None
+            else "external HTTP(S) asset reference found"
+        )
+    if kind == "css_dimensions":
+        width = int(params.get("width", 0))
+        height = int(params.get("height", 0))
+        width_ok = bool(re.search(rf"\bwidth\s*:\s*{width}px\b", text, re.I))
+        height_ok = bool(re.search(rf"\bheight\s*:\s*{height}px\b", text, re.I))
+        return width_ok and height_ok, (
+            f"found fixed {width}×{height} CSS dimensions"
+            if width_ok and height_ok
+            else f"fixed {width}×{height} CSS dimensions not found"
+        )
+    if kind == "manual":
+        return manual_observation(sheet, fighter["id"], check["id"])
+    fail(f"unsupported evaluator: {kind}")
+
+
+def decide(
+    bout: dict[str, Any], fighter_results: list[dict[str, Any]], sheet: dict[str, Any]
+) -> dict[str, Any]:
+    eligible = [fighter for fighter in fighter_results if not fighter["dq"]]
+    criterion = bout["tiebreak"]["criterion"]
+    tiebreak: dict[str, Any] = {"criterion": criterion, "scores": {}}
+
+    if not eligible:
+        return {"status": "double_dq", "winner": None, "reason": "both fighters disqualified", "tiebreak": tiebreak}
+    if len(eligible) == 1:
+        return {
+            "status": "winner",
+            "winner": eligible[0]["id"],
+            "reason": "opponent disqualified",
+            "tiebreak": tiebreak,
+        }
+
+    best_total = max(fighter["passes"] for fighter in eligible)
+    leaders = [fighter for fighter in eligible if fighter["passes"] == best_total]
+    if len(leaders) == 1:
+        return {
+            "status": "winner",
+            "winner": leaders[0]["id"],
+            "reason": "higher rubric pass total",
+            "tiebreak": tiebreak,
+        }
+
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for fighter in leaders:
+        entry = sheet.get("tiebreak", {}).get(fighter["id"])
+        if isinstance(entry, dict) and isinstance(entry.get("score"), (int, float)):
+            tiebreak["scores"][fighter["id"]] = {
+                "score": entry["score"],
+                "evidence": entry.get("evidence", ""),
+            }
+            scored.append((float(entry["score"]), fighter))
+    if len(scored) == len(leaders):
+        high = max(score for score, _ in scored)
+        winners = [fighter for score, fighter in scored if score == high]
+        if len(winners) == 1:
+            return {
+                "status": "winner",
+                "winner": winners[0]["id"],
+                "reason": f"rubric tie decided by {criterion}",
+                "tiebreak": tiebreak,
+            }
+    return {
+        "status": "vibe_vote_required",
+        "winner": None,
+        "reason": "rubric and encoded tiebreak remain tied",
+        "tiebreak": tiebreak,
+    }
+
+
+def render_card(result: dict[str, Any]) -> str:
+    fighters = result["fighters"]
+    by_id = {fighter["id"]: fighter for fighter in fighters}
+    winner_id = result["decision"]["winner"]
+    winner = by_id.get(winner_id)
+    headline = (
+        f"{winner['name']} wins"
+        if winner
+        else "Double DQ"
+        if result["decision"]["status"] == "double_dq"
+        else "Vibe vote required"
+    )
+    fighter_markup = "".join(
+        f'<section class="fighter {"winner" if fighter["id"] == winner_id else ""}">'
+        f"<h2>{html.escape(fighter['name'])}</h2>"
+        f"<p>{fighter['passes']}/{fighter['total_checks']} rubric · "
+        f"{'DQ' if fighter['dq'] else 'eligible'}</p></section>"
+        for fighter in fighters
+    )
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>{html.escape(result['bout_id'])} result</title>
+<style>
+*{{box-sizing:border-box}}html,body{{margin:0;width:1200px;height:630px;overflow:hidden}}
+body{{background:#09090b;color:#f5f1e8;font:16px system-ui,sans-serif;padding:44px}}
+.meta{{color:#d6aa4b;text-transform:uppercase;letter-spacing:.18em;font-weight:800}}
+h1{{font-size:68px;margin:32px 0}}.match{{display:grid;grid-template-columns:1fr 1fr;gap:24px}}
+.fighter{{border:2px solid #34343a;padding:26px}}.fighter.winner{{border-color:#d6aa4b}}
+h2{{font-size:42px;margin:0 0 8px}}p{{color:#aaa5a0}}.reason{{margin-top:30px;background:#df2638;
+color:white;padding:18px;font-size:21px;font-weight:750}}footer{{margin-top:24px;color:#777}}
+</style></head><body><div class="meta">{html.escape(result['bout_id'])} · {html.escape(result['lane'])} lane · official result</div>
+<h1>{html.escape(headline)}</h1><main class="match">{fighter_markup}</main>
+<div class="reason">{html.escape(result['decision']['reason'].replace('_', ' '))}</div>
+<footer>Rubric before vibes · artifact or DQ</footer></body></html>
+"""
+
+
+def judge(brief_path: Path, output_dir: Path | None = None) -> tuple[dict[str, Any], Path, Path]:
+    brief_path = brief_path.resolve()
+    bout = load_json(brief_path)
+    validate_bout(bout)
+    base = brief_path.parent
+    score_sheet_path = bout["tiebreak"].get("score_sheet")
+    sheet = load_json(base / score_sheet_path) if score_sheet_path else {"rubric": {}, "tiebreak": {}}
+    if sheet.get("bout_id") not in {None, bout["id"]}:
+        fail("score sheet bout_id does not match brief")
+
+    fighter_results: list[dict[str, Any]] = []
+    for fighter in bout["fighters"]:
+        artifact_path = (base / fighter["submission_path"]).resolve()
+        text, open_evidence = read_artifact(artifact_path)
+        checks = []
+        dq_reasons = []
+        if text is None:
+            dq_reasons.append(open_evidence)
+        for check in bout["rubric_checks"]:
+            passed, evidence = evaluate(check, fighter, text, open_evidence, sheet)
+            checks.append(
+                {
+                    "id": check["id"],
+                    "description": check["description"],
+                    "pass": passed,
+                    "evidence": evidence,
+                    "dq_on_fail": check["dq_on_fail"],
+                }
+            )
+            if not passed and check["dq_on_fail"]:
+                dq_reasons.append(f"{check['id']}: {evidence}")
+        fighter_results.append(
+            {
+                "id": fighter["id"],
+                "name": fighter["name"],
+                "submission_path": fighter["submission_path"],
+                "dq": bool(dq_reasons),
+                "dq_reasons": dq_reasons,
+                "passes": sum(check["pass"] for check in checks),
+                "total_checks": len(checks),
+                "checks": checks,
+            }
+        )
+
+    decision = decide(bout, fighter_results, sheet)
+    output_dir = (output_dir or base / "generated").resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    result_path = output_dir / "result.json"
+    card_path = output_dir / "result-card.html"
+    result = {
+        "bout_id": bout["id"],
+        "lane": bout["lane"],
+        "clock_minutes": bout["clock_minutes"],
+        "fighters": fighter_results,
+        "decision": decision,
+        "artifacts": {
+            "result_json": str(result_path),
+            "result_card_html": str(card_path),
+        },
+    }
+    result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    card_path.write_text(render_card(result), encoding="utf-8")
+    return result, result_path, card_path
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Judge one sealed Bout offline")
+    parser.add_argument("brief", type=Path, help="path to bout.json")
+    parser.add_argument("--output", type=Path, help="output directory (default: BRIEF_DIR/generated)")
+    args = parser.parse_args()
+    try:
+        result, result_path, card_path = judge(args.brief, args.output)
+    except ValueError as exc:
+        print(f"judge: {exc}", file=sys.stderr)
+        return 2
+    print(
+        json.dumps(
+            {
+                "bout_id": result["bout_id"],
+                "status": result["decision"]["status"],
+                "winner": result["decision"]["winner"],
+                "result_json": str(result_path),
+                "result_card_html": str(card_path),
+            }
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

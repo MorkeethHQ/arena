@@ -1,0 +1,8 @@
+{
+  "status": "winner",
+  "winner": "ink",
+  "rubric_passes": {
+    "iron": 6,
+    "ink": 6
+  }
+}
