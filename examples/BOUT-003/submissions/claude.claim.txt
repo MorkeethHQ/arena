@@ -1,0 +1,1 @@
+A dark bar chart with labeled typed turns, peak highlight on 13, and explicit turn-order burst strip, readable at 390px with zero external assets.

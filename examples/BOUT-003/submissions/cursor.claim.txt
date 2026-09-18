@@ -1,0 +1,1 @@
+An editorial bar chart makes the Grok Bot turn-order burst instantly legible, with a clear peak at 13 and responsive hierarchy at 390px.

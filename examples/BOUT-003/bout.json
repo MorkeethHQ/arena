@@ -7,13 +7,13 @@
       "id": "claude",
       "name": "Claude",
       "submission_path": "submissions/claude.html",
-      "claim": ""
+      "claim": "A dark bar chart with labeled typed turns, peak highlight on 13, and explicit turn-order burst strip, readable at 390px with zero external assets."
     },
     {
       "id": "cursor",
       "name": "Cursor",
       "submission_path": "submissions/cursor.html",
-      "claim": ""
+      "claim": "An editorial bar chart makes the Grok Bot turn-order burst instantly legible, with a clear peak at 13 and responsive hierarchy at 390px."
     }
   ],
   "sealed_task": "Build one single-file offline HTML page that visualizes the measured Grok Bot turn-order burst for brief-v2-export-a (tool counts per typed turn): 1, 2, 5, 13, 0, 7. Show those six numbers as a bar or ridge chart, label the basis turn-order, include the words ARENA and BOUT-003, use only inline CSS and system fonts, no network, no build step, readable at 390px.",
@@ -80,7 +80,25 @@
     "criterion": "clearer_hierarchy",
     "score_sheet": "score-sheet.json"
   },
-  "result": null,
+  "result": {
+    "status": "winner",
+    "winner": "cursor",
+    "reason": "rubric tie decided by clearer_hierarchy",
+    "score": "6-6",
+    "tiebreak": {
+      "criterion": "clearer_hierarchy",
+      "scores": {
+        "claude": {
+          "score": 1,
+          "evidence": "Peak bar and burst strip are clear, but pills and chart chrome compete at feed scale."
+        },
+        "cursor": {
+          "score": 2,
+          "evidence": "Large editorial headline, hot ARENA mark, and Peak: 13 callout read fastest as one hierarchy."
+        }
+      }
+    }
+  },
   "show": {
     "title": "ARENA meet 1: Claude vs Cursor on turn-order burst",
     "roast": "Same burst. Same check. Written before either fighter started."

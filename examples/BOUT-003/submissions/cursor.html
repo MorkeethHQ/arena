@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARENA | BOUT-003 | Grok Bot turn-order burst</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f5f1e8;
+      --muted: #9f9a91;
+      --grid: rgba(245, 241, 232, 0.12);
+      --hot: #ff5a36;
+      --gold: #ffc44d;
+      --panel: #171715;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      background:
+        radial-gradient(circle at 82% 15%, rgba(255, 90, 54, 0.15), transparent 30rem),
+        #0c0c0b;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 40px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--grid);
+      padding-bottom: 18px;
+    }
+
+    .brand,
+    .bout {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .brand {
+      color: var(--hot);
+    }
+
+    .bout {
+      color: var(--muted);
+    }
+
+    .intro {
+      padding: clamp(42px, 9vw, 84px) 0 30px;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 5.4rem);
+      font-weight: 850;
+      letter-spacing: -0.065em;
+      line-height: 0.92;
+    }
+
+    h1 span {
+      color: var(--hot);
+    }
+
+    .dek {
+      max-width: 560px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.55;
+    }
+
+    .chart-card {
+      overflow: hidden;
+      border: 1px solid var(--grid);
+      border-radius: 18px;
+      background: rgba(23, 23, 21, 0.88);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .chart-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--grid);
+    }
+
+    .chart-head h2 {
+      margin: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .sequence {
+      margin: 0;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+    }
+
+    .plot {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      align-items: end;
+      gap: clamp(8px, 2vw, 18px);
+      height: clamp(270px, 46vw, 390px);
+      padding: 38px 22px 22px;
+      background-image: linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      background-size: 100% 25%;
+    }
+
+    .bar-group {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      align-items: end;
+      height: 100%;
+      min-width: 0;
+    }
+
+    .bar-space {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .bar {
+      position: relative;
+      width: min(100%, 84px);
+      height: max(3px, calc(var(--value) / 13 * 100%));
+      min-height: 3px;
+      border-radius: 7px 7px 2px 2px;
+      background: linear-gradient(180deg, var(--gold), var(--hot));
+      box-shadow: 0 0 30px rgba(255, 90, 54, 0.14);
+    }
+
+    .value {
+      position: absolute;
+      left: 50%;
+      top: -29px;
+      transform: translateX(-50%);
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .turn {
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 15px;
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 480px) {
+      main {
+        width: min(100% - 20px, 920px);
+        padding-top: 20px;
+      }
+
+      .intro {
+        padding-top: 44px;
+      }
+
+      h1 {
+        font-size: clamp(2.7rem, 14vw, 4rem);
+      }
+
+      .chart-head {
+        display: block;
+        padding: 17px 14px;
+      }
+
+      .sequence {
+        margin-top: 7px;
+      }
+
+      .plot {
+        gap: 7px;
+        height: 300px;
+        padding: 38px 12px 18px;
+      }
+
+      .turn {
+        font-size: 0.61rem;
+        letter-spacing: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="brand">ARENA</p>
+      <p class="bout">BOUT-003</p>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">The Grok Bot <span>burst.</span></h1>
+      <p class="dek">Measured tool activity across six typed turns, preserving the original turn-order.</p>
+    </section>
+
+    <section class="chart-card" aria-labelledby="chart-title">
+      <div class="chart-head">
+        <h2 id="chart-title">Tools per typed turn</h2>
+        <p class="sequence" aria-label="Burst values 1, 2, 5, 13, 0, 7">1, 2, 5, 13, 0, 7</p>
+      </div>
+
+      <div class="plot" role="img" aria-label="Bar chart showing tool counts 1, 2, 5, 13, 0, and 7 in turn-order">
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 1"><span class="value">1</span></div></div>
+          <p class="turn">Turn 1</p>
+        </div>
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 2"><span class="value">2</span></div></div>
+          <p class="turn">Turn 2</p>
+        </div>
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 5"><span class="value">5</span></div></div>
+          <p class="turn">Turn 3</p>
+        </div>
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 13"><span class="value">13</span></div></div>
+          <p class="turn">Turn 4</p>
+        </div>
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 0"><span class="value">0</span></div></div>
+          <p class="turn">Turn 5</p>
+        </div>
+        <div class="bar-group">
+          <div class="bar-space"><div class="bar" style="--value: 7"><span class="value">7</span></div></div>
+          <p class="turn">Turn 6</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>Basis: turn-order</span>
+      <span>Peak: 13</span>
+    </footer>
+  </main>
+</body>
+</html>
