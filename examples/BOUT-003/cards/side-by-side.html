@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1200">
+  <meta name="bout-card-size" content="1200x630">
+  <title>BOUT-003 side by side</title>
+  <style>
+    :root{--bg:#09090a;--panel:#101011;--ink:#f5f1e8;--mute:#918d87;--gold:#d6aa4b}
+    *{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+    body{background:var(--bg);color:var(--ink);font-family:Arial,"Helvetica Neue",system-ui,sans-serif}
+    .card{width:1200px;height:630px;padding:22px 20px 20px}
+    h1{margin:0;color:var(--gold);font-size:26px;line-height:1;font-weight:900;letter-spacing:.01em}
+    .captions{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:5px 0 1px;
+      color:var(--mute);font-size:15px}
+    .panels{height:536px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    figure{position:relative;margin:0;background:var(--panel);border:2px solid transparent;
+      display:flex;align-items:center;justify-content:center;overflow:hidden}
+    figure.winner{border-color:var(--gold)}
+    img{display:block;width:100%;height:auto;max-height:100%;object-fit:contain}
+    .badge{position:absolute;top:10px;right:10px;padding:5px 9px;background:var(--gold);
+      color:#111;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+    figure:not(.winner) .badge{display:none}
+  </style>
+</head>
+<body>
+  <main class="card" data-width="1200" data-height="630">
+    <h1>BOUT-003 · Cursor wins · Ship lane</h1>
+    <div class="captions">
+      <span>Claude · 6 rubric passes</span>
+      <span>Cursor · 6 rubric passes</span>
+    </div>
+    <section class="panels">
+      <figure class=""><img src="claude.png" alt="Claude fighter asset"><span class="badge">Winner</span></figure>
+      <figure class="winner"><img src="cursor.png" alt="Cursor fighter asset"><span class="badge">Winner</span></figure>
+    </section>
+  </main>
+</body>
+</html>

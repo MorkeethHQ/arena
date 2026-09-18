@@ -91,9 +91,12 @@ def screenshot(chrome: str, source: Path, target: Path) -> None:
         ]
         try:
             process = subprocess.run(
-                command, text=True, capture_output=True, check=False, timeout=30
+                command, text=True, capture_output=True, check=False, timeout=25
             )
         except subprocess.TimeoutExpired:
+            # Headless Chrome on macOS often writes the PNG then hangs.
+            if target.is_file() and png_size(target) == (CARD_WIDTH, CARD_HEIGHT):
+                return
             fail(f"Chrome timed out rendering {source}")
     if process.returncode:
         detail = (process.stderr or process.stdout).strip()
