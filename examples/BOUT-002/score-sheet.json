@@ -1,0 +1,51 @@
+{
+  "bout_id": "BOUT-002",
+  "rubric": {
+    "iron": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Title, Clerk vs Anvil, and Round 1 · 12:00 are prominent."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "One red mean-line strip appears above the footer."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Large title and fighter lockup read as a fight poster."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "The official fixture result records the reply check as passed; reply text was not retained."
+      }
+    },
+    "ink": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Title, Rook vs Pyre, and Round 1 · 12:00 are prominent."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "One cream mean-line strip appears above the footer."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Large split-color names and title read as a fight poster."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "The official fixture result records the reply check as passed; reply text was not retained."
+      }
+    }
+  },
+  "tiebreak": {
+    "iron": {
+      "score": 1,
+      "evidence": "Clear sports frame, but several UI-like labels compete at feed scale."
+    },
+    "ink": {
+      "score": 2,
+      "evidence": "Rook/Pyre split and the light roast bar communicate at timeline scroll speed."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "bout_id": "BOUT-001",
+  "rubric": {
+    "erik": {
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Single red roast strip: “ERIC ships vibes. Erik ships the file.”"
+      },
+      "mobile_readable": {
+        "pass": true,
+        "evidence": "Fluid card is capped at 390px and remains ordered in one column."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "The official fixture result records the path-and-claim check as passed; reply text was not retained."
+      }
+    },
+    "eric": {
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Single red roast strip: “Erik shows up when the spelling is optional…”"
+      },
+      "mobile_readable": {
+        "pass": true,
+        "evidence": "Fluid card and clamped type remain readable in a 390px viewport."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "The official fixture result records the path-and-claim check as passed; reply text was not retained."
+      }
+    }
+  },
+  "tiebreak": {
+    "erik": {
+      "score": 2,
+      "evidence": "Clear sequence: id and clock, title, fighters, roast, then footer."
+    },
+    "eric": {
+      "score": 1,
+      "evidence": "Strong title and roast, with a less explicit sports-information sequence."
+    }
+  }
+}

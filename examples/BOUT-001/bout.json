@@ -1,0 +1,70 @@
+{
+  "id": "BOUT-001",
+  "lane": "Ship",
+  "clock_minutes": 12,
+  "fighters": [
+    {
+      "id": "erik",
+      "name": "Erik",
+      "submission_path": "submissions/Erik.html",
+      "claim": ""
+    },
+    {
+      "id": "eric",
+      "name": "ERIC",
+      "submission_path": "submissions/ERIC.html",
+      "claim": ""
+    }
+  ],
+  "sealed_task": "Build one single-file HTML fight card for a fictional bout between two personal AI assistants.",
+  "submission_paths": [
+    "submissions/Erik.html",
+    "submissions/ERIC.html"
+  ],
+  "rubric_checks": [
+    {
+      "id": "html_opens",
+      "description": "File opens locally as HTML5 with no build step.",
+      "evaluator": "file_opens",
+      "dq_on_fail": true
+    },
+    {
+      "id": "required_copy",
+      "description": "Shows both names, a bout title, and a wall-clock or round mark.",
+      "evaluator": "contains_all",
+      "dq_on_fail": false,
+      "params": {
+        "terms": ["Erik", "ERIC", "BOUT-001", "12:00"]
+      }
+    },
+    {
+      "id": "roast_strip",
+      "description": "Contains one factual-sounding mean-line roast strip.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "offline_assets",
+      "description": "Uses no external network assets or tracking.",
+      "evaluator": "no_external_assets",
+      "dq_on_fail": true
+    },
+    {
+      "id": "mobile_readable",
+      "description": "Remains readable at 390px width.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "reply_shape",
+      "description": "Reply supplied the absolute path and one-sentence claim.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    }
+  ],
+  "tiebreak": {
+    "criterion": "clearer_hierarchy",
+    "score_sheet": "score-sheet.json"
+  },
+  "result": null
+}

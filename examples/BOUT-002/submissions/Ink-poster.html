@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Assistants Go to War</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #0a0a0c;
+  }
+  .board {
+    width: 1200px;
+    height: 630px;
+    position: relative;
+    background:
+      radial-gradient(ellipse 90% 70% at 18% 40%, rgba(255, 72, 42, 0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 65% at 82% 55%, rgba(56, 120, 255, 0.18) 0%, transparent 50%),
+      linear-gradient(160deg, #121218 0%, #0a0a0c 45%, #0e1016 100%);
+    color: #f4f1ea;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    overflow: hidden;
+  }
+  .board::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        -12deg,
+        transparent 0 18px,
+        rgba(255,255,255,0.015) 18px 19px
+      );
+    pointer-events: none;
+  }
+  .frame {
+    position: absolute;
+    inset: 22px;
+    border: 1px solid rgba(244,241,234,0.28);
+    outline: 1px solid rgba(244,241,234,0.08);
+    outline-offset: 6px;
+  }
+  .meta {
+    position: absolute;
+    top: 42px;
+    left: 52px;
+    right: 52px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.62);
+  }
+  .meta .pill {
+    border: 1px solid rgba(244,241,234,0.35);
+    padding: 6px 12px;
+    letter-spacing: 0.22em;
+  }
+  .title {
+    position: absolute;
+    top: 108px;
+    left: 52px;
+    right: 52px;
+    font-size: 72px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  .title span {
+    display: block;
+    color: rgba(244,241,234,0.92);
+  }
+  .title .accent {
+    color: #ff5a3c;
+  }
+  .fighters {
+    position: absolute;
+    top: 290px;
+    left: 52px;
+    right: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .fighter {
+    flex: 1;
+    min-width: 0;
+  }
+  .fighter.left { text-align: left; }
+  .fighter.right { text-align: right; }
+  .role {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.5);
+    margin-bottom: 10px;
+  }
+  .name {
+    font-size: 64px;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+  .fighter.left .name { color: #ff7a5c; }
+  .fighter.right .name { color: #7aa8ff; }
+  .vs {
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px solid rgba(244,241,234,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    background: rgba(10,10,12,0.65);
+  }
+  .roast {
+    position: absolute;
+    left: 52px;
+    right: 52px;
+    bottom: 88px;
+    background: #f4f1ea;
+    color: #0a0a0c;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .roast .tag {
+    flex: 0 0 auto;
+    background: #ff5a3c;
+    color: #fff;
+    padding: 4px 10px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+  .footer {
+    position: absolute;
+    left: 52px;
+    right: 52px;
+    bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.45);
+  }
+</style>
+</head>
+<body>
+  <div class="board" style="width:1200px;height:630px">
+    <div class="frame"></div>
+    <div class="meta">
+      <div>Personal-AI Dual Meet · Sealed</div>
+      <div class="pill">Round 1 · 12:00</div>
+    </div>
+    <h1 class="title">
+      <span>Assistants</span>
+      <span class="accent">Go to War</span>
+    </h1>
+    <div class="fighters">
+      <div class="fighter left">
+        <div class="role">Corner A</div>
+        <div class="name">Rook</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="fighter right">
+        <div class="role">Corner B</div>
+        <div class="name">Pyre</div>
+      </div>
+    </div>
+    <div class="roast">
+      <span class="tag">Roast</span>
+      <span>Same prompt. Same clock. One of you ships a poster. The other ships excuses.</span>
+    </div>
+    <div class="footer">
+      <span>BOUT · Poster Lane</span>
+      <span>Designed by Ink</span>
+    </div>
+  </div>
+</body>
+</html>

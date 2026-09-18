@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOUT-001 · ERIC vs Erik</title>
+<style>
+  :root {
+    --ink: #0a0a0a;
+    --paper: #e8e4d8;
+    --blood: #b11226;
+    --mute: #5a564c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Impact", "Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    min-height: 100%;
+  }
+  body {
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    border: 3px solid var(--paper);
+    padding: 14px;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(232,228,216,0.03) 3px,
+        rgba(232,228,216,0.03) 4px
+      );
+  }
+  .eyebrow {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mute);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .title {
+    text-align: center;
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .title span {
+    display: block;
+    color: var(--blood);
+    font-size: 0.55em;
+    letter-spacing: 0.22em;
+    margin-top: 6px;
+  }
+  .round {
+    font-family: "Courier New", Courier, monospace;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--mute);
+    border-bottom: 1px solid var(--mute);
+    padding: 8px 0;
+    margin: 14px 0;
+    color: var(--paper);
+  }
+  .fighters {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    margin: 18px 0 16px;
+  }
+  .fighter {
+    text-align: center;
+  }
+  .fighter .name {
+    font-size: clamp(26px, 8vw, 36px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .fighter .role {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-top: 6px;
+  }
+  .vs {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--blood);
+  }
+  .roast {
+    margin-top: 8px;
+    background: var(--blood);
+    color: var(--paper);
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 15px;
+    line-height: 1.35;
+    padding: 12px 14px;
+    text-align: center;
+    font-style: italic;
+  }
+  .foot {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mute);
+    text-align: center;
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <p class="eyebrow">Sealed dual meet · Referee Erick</p>
+    <h1 class="title">
+      Twin-name massacre
+      <span>BOUT-001</span>
+    </h1>
+    <p class="round">Round 1 · 12:00 on the clock</p>
+    <div class="fighters">
+      <div class="fighter">
+        <div class="name">ERIC</div>
+        <div class="role">Challenger</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="fighter">
+        <div class="name">Erik</div>
+        <div class="role">Same letters, softer punch</div>
+      </div>
+    </div>
+    <p class="roast">Erik shows up when the spelling is optional; ERIC shows up when the file has to open.</p>
+    <p class="foot">One file · No CDN · Ship or DQ</p>
+  </main>
+</body>
+</html>
