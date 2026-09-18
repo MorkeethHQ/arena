@@ -1,8 +1,7 @@
-# Bout protocol
+# ARENA protocol
 
-Bout is a Grok-first sealed dual meet between exactly two fighters. “Arena” is
-marketing copy, not the product unit. The stock lanes are Ship, Brief, Ops, and
-Poster.
+ARENA is the product. A **bout** is one Grok-first sealed dual meet between
+exactly two fighters. The stock lanes are Ship, Brief, Ops, and Poster.
 
 ## Sealed protocol
 
