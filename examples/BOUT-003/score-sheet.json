@@ -1,0 +1,14 @@
+{
+  "bout_id": "BOUT-003",
+  "observations": {
+    "claude": {
+      "clearer_hierarchy": null,
+      "notes": "sealed blank before fight"
+    },
+    "cursor": {
+      "clearer_hierarchy": null,
+      "notes": "sealed blank before fight"
+    }
+  },
+  "rule": "Scores 0-2 for clearer_hierarchy filled only after both artifacts exist. Must not name a winner."
+}
