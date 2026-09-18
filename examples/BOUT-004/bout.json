@@ -1,0 +1,111 @@
+{
+  "id": "BOUT-004",
+  "lane": "Ship",
+  "clock_minutes": 20,
+  "fighters": [
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "submission_path": "submissions/cursor.html",
+      "claim": ""
+    },
+    {
+      "id": "grok",
+      "name": "Grok",
+      "submission_path": "submissions/grok.html",
+      "claim": ""
+    }
+  ],
+  "sealed_task": "Build one single-file offline HTML page that a stranger can open on a phone with no network: an ARENA sealed-meet briefing card for BOUT-004 (fighters Cursor and Grok, lane Ship, tiebreak clearer_hierarchy). Say ARENA and BOUT-004. List the six sealed-protocol steps in order: freeze brief; identical start; artifact path plus one-sentence claim; referee opens declared artifacts only; missing or unreadable artifact is DQ; pass totals then lane tiebreak. State that the winner is the check, not a vote. Name fighters Cursor and Grok. Inline CSS and system fonts only. No network. No build. Readable at 390px. Do not chart the BOUT-003 burst.",
+  "submission_paths": [
+    "submissions/cursor.html",
+    "submissions/grok.html"
+  ],
+  "rubric_checks": [
+    {
+      "id": "html_opens",
+      "description": "File opens locally as HTML with no build step.",
+      "evaluator": "file_opens",
+      "dq_on_fail": true
+    },
+    {
+      "id": "arena_mark",
+      "description": "Shows ARENA and BOUT-004.",
+      "evaluator": "contains_all",
+      "dq_on_fail": true,
+      "params": {
+        "terms": [
+          "ARENA",
+          "BOUT-004"
+        ]
+      }
+    },
+    {
+      "id": "protocol_steps",
+      "description": "Lists the six sealed-protocol steps.",
+      "evaluator": "contains_all",
+      "dq_on_fail": false,
+      "params": {
+        "terms": [
+          "freeze brief",
+          "identical start",
+          "artifact path",
+          "declared artifacts",
+          "DQ",
+          "tiebreak"
+        ]
+      }
+    },
+    {
+      "id": "fighters_named",
+      "description": "Names fighters Cursor and Grok.",
+      "evaluator": "contains_all",
+      "dq_on_fail": false,
+      "params": {
+        "terms": [
+          "Cursor",
+          "Grok"
+        ]
+      }
+    },
+    {
+      "id": "check_not_vote",
+      "description": "States winner is the check, not a vote.",
+      "evaluator": "contains_all",
+      "dq_on_fail": false,
+      "params": {
+        "terms": [
+          "check",
+          "vote"
+        ]
+      }
+    },
+    {
+      "id": "offline_assets",
+      "description": "Uses no external network assets.",
+      "evaluator": "no_external_assets",
+      "dq_on_fail": true
+    },
+    {
+      "id": "claim_present",
+      "description": "Reply supplied a one-sentence shipping claim.",
+      "evaluator": "claim_present",
+      "dq_on_fail": false
+    },
+    {
+      "id": "mobile_readable",
+      "description": "Remains readable at 390px width.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    }
+  ],
+  "tiebreak": {
+    "criterion": "clearer_hierarchy",
+    "score_sheet": "score-sheet.json"
+  },
+  "result": null,
+  "show": {
+    "title": "ARENA meet 2: Cursor vs Grok on sealed briefing card",
+    "roast": "Same protocol card. Same check. Grok Bot as building partner on the cloud computer."
+  }
+}
