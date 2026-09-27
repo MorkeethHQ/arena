@@ -1,0 +1,28 @@
+{
+  "bout_id": "BOUT-006-R2",
+  "parent": "BOUT-006",
+  "day_two": true,
+  "loser": "Strava Live Review",
+  "single_change": {
+    "corner": "strava_live_review",
+    "field": "skills",
+    "from": [],
+    "to": [
+      {
+        "id": "post-agentic-strava-run",
+        "name": "Post Agentic Strava run",
+        "note": "Day-two rematch: single losing config item added"
+      }
+    ],
+    "rationale": "Exactly one losing config item: add post-agentic-strava-run skill binding."
+  },
+  "winner_material_unchanged": true,
+  "pre_kickoff_hashes_r2": {
+    "agentic_strava": "be9d8dbab63efcdea6998612e98883d9af237d4f506ece2cf748d8805289ce7a",
+    "strava_live_review": "6a9a1d484d96594626c819fc4ee253326d39e7e7b82de9cdbdce022f0f0956cb"
+  },
+  "pre_kickoff_hashes_r1": {
+    "agentic_strava": "b91f82ffb9a5a30020deb421a43abbc28a8cc179d10f38d7259f4c83b139c07a",
+    "strava_live_review": "496cb53a079768db516a4ab8e1e3fb219b558066a66574680affca5e2ff244c1"
+  }
+}

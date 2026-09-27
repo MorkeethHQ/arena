@@ -1,0 +1,19 @@
+{
+  "bout_id": "BOUT-006-R2",
+  "parent": "BOUT-006",
+  "format": "Config Clash",
+  "sealed_at": "2026-09-27T14:44:56Z",
+  "corners": {
+    "agentic_strava": {
+      "agent_uuid": "d7cc37ca-60c4-42c3-b729-b6be349038e0",
+      "manifest": "manifests/agentic_strava.json",
+      "sha256": "be9d8dbab63efcdea6998612e98883d9af237d4f506ece2cf748d8805289ce7a"
+    },
+    "strava_live_review": {
+      "agent_uuid": "cbd2ca66-1096-40e3-94af-ff4791132ce8",
+      "manifest": "manifests/strava_live_review.json",
+      "sha256": "6a9a1d484d96594626c819fc4ee253326d39e7e7b82de9cdbdce022f0f0956cb"
+    }
+  },
+  "config_delta_one_line": "\u0394 day-two (loser only): skills [] \u2192 [post-agentic-strava-run]; description delta from R1 unchanged"
+}

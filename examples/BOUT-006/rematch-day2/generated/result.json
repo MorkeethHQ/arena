@@ -1,0 +1,180 @@
+{
+  "bout_id": "BOUT-006",
+  "lane": "Poster",
+  "clock_minutes": 20,
+  "source_bout_json": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/bout.json",
+  "show": {
+    "title": "Config Clash \u00b7 Rematch",
+    "roast": "VERDICT: Strava Live Review over Agentic Strava (timeline hook). \u0394 day-two (loser only): skills [] \u2192 [post-agentic-strava-run]; description delta from R1 unchanged",
+    "fighter_captions": {
+      "agentic_strava": "unchanged material config",
+      "strava_live_review": "skills += post-agentic-strava-run"
+    }
+  },
+  "fighters": [
+    {
+      "id": "agentic_strava",
+      "name": "Agentic Strava",
+      "submission_path": "submissions/AgenticStrava.html",
+      "artifact": {
+        "path": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/submissions/AgenticStrava.html",
+        "opens": true,
+        "evidence": "file exists, decodes as UTF-8, and has an openable document root"
+      },
+      "dq": false,
+      "dq_reasons": [],
+      "passes": 7,
+      "total_checks": 7,
+      "checks": [
+        {
+          "id": "artboard",
+          "description": "File opens and the root artboard is exactly 1200\u00d7630 CSS pixels.",
+          "pass": true,
+          "evidence": "found fixed 1200\u00d7630 CSS dimensions",
+          "dq_on_fail": true
+        },
+        {
+          "id": "required_copy",
+          "description": "Readable title Config Clash, both corner names, and round or clock mark.",
+          "pass": true,
+          "evidence": "Config Clash title, both corners, Round 2 \u00b7 20:00.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "role_lock",
+          "description": "Poster carries a frozen role marker unique to this corner\u2019s pre-kickoff manifest.",
+          "pass": true,
+          "evidence": "Frozen marker Capture and privately preview runs present.",
+          "dq_on_fail": true
+        },
+        {
+          "id": "roast_strip",
+          "description": "Contains one mean-line roast strip.",
+          "pass": true,
+          "evidence": "Day-two roast strip present.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "offline_assets",
+          "description": "Uses no external network assets, tracking, or remote fonts.",
+          "pass": true,
+          "evidence": "no HTTP(S) asset references found",
+          "dq_on_fail": true
+        },
+        {
+          "id": "poster_hierarchy",
+          "description": "Reads as a poster from two meters or on a phone timeline.",
+          "pass": true,
+          "evidence": "Poster hierarchy intact.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "reply_shape",
+          "description": "Reply supplied the absolute path and one-sentence claim.",
+          "pass": true,
+          "evidence": "Claim present in bout.json.",
+          "dq_on_fail": false
+        }
+      ]
+    },
+    {
+      "id": "strava_live_review",
+      "name": "Strava Live Review",
+      "submission_path": "submissions/StravaLiveReview.html",
+      "artifact": {
+        "path": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/submissions/StravaLiveReview.html",
+        "opens": true,
+        "evidence": "file exists, decodes as UTF-8, and has an openable document root"
+      },
+      "dq": false,
+      "dq_reasons": [],
+      "passes": 7,
+      "total_checks": 7,
+      "checks": [
+        {
+          "id": "artboard",
+          "description": "File opens and the root artboard is exactly 1200\u00d7630 CSS pixels.",
+          "pass": true,
+          "evidence": "found fixed 1200\u00d7630 CSS dimensions",
+          "dq_on_fail": true
+        },
+        {
+          "id": "required_copy",
+          "description": "Readable title Config Clash, both corner names, and round or clock mark.",
+          "pass": true,
+          "evidence": "Config Clash title, both corners, Round 2 \u00b7 20:00.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "role_lock",
+          "description": "Poster carries a frozen role marker unique to this corner\u2019s pre-kickoff manifest.",
+          "pass": true,
+          "evidence": "Frozen marker Exercise the real path + skill: post-agentic-strava-run.",
+          "dq_on_fail": true
+        },
+        {
+          "id": "roast_strip",
+          "description": "Contains one mean-line roast strip.",
+          "pass": true,
+          "evidence": "Day-two roast strip present.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "offline_assets",
+          "description": "Uses no external network assets, tracking, or remote fonts.",
+          "pass": true,
+          "evidence": "no HTTP(S) asset references found",
+          "dq_on_fail": true
+        },
+        {
+          "id": "poster_hierarchy",
+          "description": "Reads as a poster from two meters or on a phone timeline.",
+          "pass": true,
+          "evidence": "Skill callout adds hierarchy on the rematch card.",
+          "dq_on_fail": false
+        },
+        {
+          "id": "reply_shape",
+          "description": "Reply supplied the absolute path and one-sentence claim.",
+          "pass": true,
+          "evidence": "Claim present in bout.json.",
+          "dq_on_fail": false
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "status": "winner",
+    "winner": "strava_live_review",
+    "reason": "rubric tie decided by timeline_hook",
+    "tiebreak": {
+      "criterion": "timeline_hook",
+      "scores": {
+        "agentic_strava": {
+          "score": 1,
+          "evidence": "Same strong role lock; no new config lever."
+        },
+        "strava_live_review": {
+          "score": 2,
+          "evidence": "Single skill add reads as the rematch story at scroll speed."
+        }
+      }
+    }
+  },
+  "artifacts": {
+    "result_json": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/generated/result.json",
+    "result_card_html": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/generated/result-card.html",
+    "public_kit": {
+      "dimensions": "1200x630",
+      "fighter_assets": {
+        "agentic_strava": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/AgenticStrava.png",
+        "strava_live_review": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/StravaLiveReview.png"
+      },
+      "side_by_side_html": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/side-by-side.html",
+      "side_by_side_png": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/side-by-side.png",
+      "result_card_html": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/result.html",
+      "result_card_png": "/workspace/bout-repo/examples/BOUT-006/rematch-day2/cards/result.png",
+      "rendered": true
+    }
+  }
+}

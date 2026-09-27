@@ -1,0 +1,19 @@
+{
+  "schema": "arena.config-manifest.v1",
+  "fighter_id": "strava_live_review",
+  "agent_uuid": "cbd2ca66-1096-40e3-94af-ff4791132ce8",
+  "frozen_at": "2026-09-27T14:44:19Z",
+  "name": "Strava Live Review",
+  "title": "",
+  "description": "Live-review bot for Agentic Strava. Exercise the real path: pick a Grok Bot JSONL export on this computer → metrics-only private preview with post-agent-run → human writes title/caption/output link → audience stays unset until deliberate Save. Never auto-publish, ACK, reply, follow, or message people. Unknown metrics stay unknown. Label bot activity. Report prepared vs posted separately. Use localhost until an approved hosted URL exists; never the hackathon service.",
+  "avatarShape": "",
+  "avatarColor": "",
+  "harness": "temporal",
+  "settings": {
+    "notifyOnAgentUpdates": true
+  },
+  "skills": [],
+  "routines": [],
+  "connectors": [],
+  "memory": []
+}

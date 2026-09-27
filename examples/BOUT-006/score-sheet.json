@@ -1,0 +1,59 @@
+{
+  "bout_id": "BOUT-006",
+  "rubric": {
+    "agentic_strava": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Title Config Clash, Agentic Strava vs Strava Live Review, Round 1 \u00b7 20:00 present."
+      },
+      "role_lock": {
+        "pass": true,
+        "evidence": "Frozen role marker present: \u201cCapture and privately preview runs\u201d matches pre-kickoff manifest description."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Red roast strip: Config is the corner \u2014 rename theater DQs at the bell."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Large title + role line reads as a fight poster at feed scale."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "Absolute path + one-sentence claim recorded in bout.json fighter claim."
+      }
+    },
+    "strava_live_review": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Title Config Clash, both corners, Round 1 \u00b7 20:00 present."
+      },
+      "role_lock": {
+        "pass": true,
+        "evidence": "Frozen role marker present: \u201cExercise the real path\u201d matches pre-kickoff manifest description."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Red roast strip present with Config Clash mean line."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Large title and vs lockup read as a poster; role line slightly quieter than rival."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "Absolute path + one-sentence claim recorded in bout.json fighter claim."
+      }
+    }
+  },
+  "tiebreak": {
+    "agentic_strava": {
+      "score": 2,
+      "evidence": "Role line + red accent communicate the frozen config identity fastest at scroll speed."
+    },
+    "strava_live_review": {
+      "score": 1,
+      "evidence": "Clear live-review lockup, but role hierarchy yields slightly more to the rival\u2019s accent weight."
+    }
+  }
+}
