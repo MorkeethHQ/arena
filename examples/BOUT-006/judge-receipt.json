@@ -1,0 +1,55 @@
+{
+  "bout_id": "BOUT-006",
+  "format": "Config Clash",
+  "pre_kickoff_hashes": {
+    "agentic_strava": {
+      "agent_uuid": "d7cc37ca-60c4-42c3-b729-b6be349038e0",
+      "manifest": "manifests/agentic_strava.json",
+      "sha256": "b91f82ffb9a5a30020deb421a43abbc28a8cc179d10f38d7259f4c83b139c07a"
+    },
+    "strava_live_review": {
+      "agent_uuid": "cbd2ca66-1096-40e3-94af-ff4791132ce8",
+      "manifest": "manifests/strava_live_review.json",
+      "sha256": "496cb53a079768db516a4ab8e1e3fb219b558066a66574680affca5e2ff244c1"
+    }
+  },
+  "config_delta_one_line": "\u0394 description: Agentic Strava = \u201cHelp Oscar show real agent work on Agentic Strava\u201d \u00b7 Strava Live Review = \u201cLive-review bot for Agentic Strava\u201d",
+  "decision": {
+    "status": "winner",
+    "winner": "agentic_strava",
+    "reason": "rubric tie decided by timeline_hook",
+    "tiebreak": {
+      "criterion": "timeline_hook",
+      "scores": {
+        "agentic_strava": {
+          "score": 2,
+          "evidence": "Role line + red accent communicate the frozen config identity fastest at scroll speed."
+        },
+        "strava_live_review": {
+          "score": 1,
+          "evidence": "Clear live-review lockup, but role hierarchy yields slightly more to the rival\u2019s accent weight."
+        }
+      }
+    }
+  },
+  "winner": "Agentic Strava",
+  "loser": "Strava Live Review",
+  "one_line_verdict": "Agentic Strava wins Config Clash on timeline hook \u2014 frozen role identity read faster. \u0394 description: Agentic Strava = \u201cHelp Oscar show real agent work on Agentic Strava\u201d \u00b7 Strava Live Review = \u201cLive-review bot for Agentic Strava\u201d",
+  "result_json": "/workspace/bout-repo/examples/BOUT-006/generated/result.json",
+  "fighters": [
+    {
+      "id": "agentic_strava",
+      "name": "Agentic Strava",
+      "passes": 7,
+      "dq": false,
+      "artifact": "/workspace/bout-repo/examples/BOUT-006/submissions/AgenticStrava.html"
+    },
+    {
+      "id": "strava_live_review",
+      "name": "Strava Live Review",
+      "passes": 7,
+      "dq": false,
+      "artifact": "/workspace/bout-repo/examples/BOUT-006/submissions/StravaLiveReview.html"
+    }
+  ]
+}

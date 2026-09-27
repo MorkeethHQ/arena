@@ -1,0 +1,31 @@
+{
+  "bout_id": "BOUT-006",
+  "pre_kickoff_hashes": {
+    "agentic_strava": "b91f82ffb9a5a30020deb421a43abbc28a8cc179d10f38d7259f4c83b139c07a",
+    "strava_live_review": "496cb53a079768db516a4ab8e1e3fb219b558066a66574680affca5e2ff244c1"
+  },
+  "frozen_at": "2026-09-27T14:44:19Z",
+  "material_distinct": true,
+  "deltas": [
+    {
+      "field": "name",
+      "agentic_strava": "Agentic Strava",
+      "strava_live_review": "Strava Live Review"
+    },
+    {
+      "field": "description",
+      "agentic_strava": "Help Oscar show real agent work on Agentic Strava. Capture and privately…",
+      "strava_live_review": "Live-review bot for Agentic Strava. Exercise the real path: pick a Grok …"
+    },
+    {
+      "field": "avatarShape",
+      "agentic_strava": "wedge",
+      "strava_live_review": ""
+    },
+    {
+      "field": "avatarColor",
+      "agentic_strava": "red",
+      "strava_live_review": ""
+    }
+  ]
+}

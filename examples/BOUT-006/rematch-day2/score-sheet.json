@@ -1,0 +1,59 @@
+{
+  "bout_id": "BOUT-006",
+  "rubric": {
+    "agentic_strava": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Config Clash title, both corners, Round 2 \u00b7 20:00."
+      },
+      "role_lock": {
+        "pass": true,
+        "evidence": "Frozen marker Capture and privately preview runs present."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Day-two roast strip present."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Poster hierarchy intact."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "Claim present in bout.json."
+      }
+    },
+    "strava_live_review": {
+      "required_copy": {
+        "pass": true,
+        "evidence": "Config Clash title, both corners, Round 2 \u00b7 20:00."
+      },
+      "role_lock": {
+        "pass": true,
+        "evidence": "Frozen marker Exercise the real path + skill: post-agentic-strava-run."
+      },
+      "roast_strip": {
+        "pass": true,
+        "evidence": "Day-two roast strip present."
+      },
+      "poster_hierarchy": {
+        "pass": true,
+        "evidence": "Skill callout adds hierarchy on the rematch card."
+      },
+      "reply_shape": {
+        "pass": true,
+        "evidence": "Claim present in bout.json."
+      }
+    }
+  },
+  "tiebreak": {
+    "agentic_strava": {
+      "score": 1,
+      "evidence": "Same strong role lock; no new config lever."
+    },
+    "strava_live_review": {
+      "score": 2,
+      "evidence": "Single skill add reads as the rematch story at scroll speed."
+    }
+  }
+}

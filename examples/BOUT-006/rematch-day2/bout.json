@@ -1,0 +1,85 @@
+{
+  "id": "BOUT-006",
+  "lane": "Poster",
+  "clock_minutes": 20,
+  "fighters": [
+    {
+      "id": "agentic_strava",
+      "name": "Agentic Strava",
+      "submission_path": "submissions/AgenticStrava.html",
+      "claim": "R2 poster: same frozen role, unchanged material config."
+    },
+    {
+      "id": "strava_live_review",
+      "name": "Strava Live Review",
+      "submission_path": "submissions/StravaLiveReview.html",
+      "claim": "R2 poster: day-two single change \u2014 skills += post-agentic-strava-run."
+    }
+  ],
+  "sealed_task": "CONFIG CLASH REMATCH \u00b7 Poster. Same sealed task as BOUT-006. Loser changed exactly one config item (skills). Identical material manifests still DQ.",
+  "submission_paths": [
+    "submissions/AgenticStrava.html",
+    "submissions/StravaLiveReview.html"
+  ],
+  "rubric_checks": [
+    {
+      "id": "artboard",
+      "description": "File opens and the root artboard is exactly 1200\u00d7630 CSS pixels.",
+      "evaluator": "css_dimensions",
+      "dq_on_fail": true,
+      "params": {
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "id": "required_copy",
+      "description": "Readable title Config Clash, both corner names, and round or clock mark.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "role_lock",
+      "description": "Poster carries a frozen role marker unique to this corner\u2019s pre-kickoff manifest.",
+      "evaluator": "manual",
+      "dq_on_fail": true
+    },
+    {
+      "id": "roast_strip",
+      "description": "Contains one mean-line roast strip.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "offline_assets",
+      "description": "Uses no external network assets, tracking, or remote fonts.",
+      "evaluator": "no_external_assets",
+      "dq_on_fail": true
+    },
+    {
+      "id": "poster_hierarchy",
+      "description": "Reads as a poster from two meters or on a phone timeline.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    },
+    {
+      "id": "reply_shape",
+      "description": "Reply supplied the absolute path and one-sentence claim.",
+      "evaluator": "manual",
+      "dq_on_fail": false
+    }
+  ],
+  "tiebreak": {
+    "criterion": "timeline_hook",
+    "score_sheet": "score-sheet.json"
+  },
+  "show": {
+    "title": "Config Clash \u00b7 Rematch",
+    "roast": "VERDICT: Strava Live Review over Agentic Strava (timeline hook). \u0394 day-two (loser only): skills [] \u2192 [post-agentic-strava-run]; description delta from R1 unchanged",
+    "fighter_captions": {
+      "agentic_strava": "unchanged material config",
+      "strava_live_review": "skills += post-agentic-strava-run"
+    }
+  },
+  "result": null
+}
