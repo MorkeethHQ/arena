@@ -1,0 +1,326 @@
+#!/usr/bin/env python3
+"""Judge a source-bound real-work ARENA fixture and render an offline replay."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import html
+import json
+import sys
+from pathlib import Path
+from typing import Any, NoReturn
+
+
+ACTION_CATEGORIES = {"inspect", "edit", "test", "recover", "human", "auth", "commit"}
+
+
+def fail(message: str) -> NoReturn:
+    raise ValueError(message)
+
+
+def load_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        fail(f"cannot read JSON {path}: {exc}")
+
+
+def inside(base: Path, relative: str) -> Path:
+    path = (base / relative).resolve()
+    try:
+        path.relative_to(base.resolve())
+    except ValueError:
+        fail(f"path escapes fixture: {relative}")
+    return path
+
+
+def tree_fingerprint(root: Path) -> str:
+    if not root.is_dir():
+        fail(f"frozen source tree is missing: {root}")
+    digest = hashlib.sha256()
+    files = sorted(path for path in root.rglob("*") if path.is_file())
+    if not files:
+        fail("frozen source tree is empty")
+    for path in files:
+        digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return f"sha256:{digest.hexdigest()}"
+
+
+def require_string(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        fail(f"{label} must be a non-empty string")
+    return value
+
+
+def validate(brief: dict[str, Any], base: Path) -> None:
+    for key in ("id", "frozen", "acceptance_checks", "runs", "golden_bot"):
+        if key not in brief:
+            fail(f"work bout is missing {key}")
+    frozen = brief["frozen"]
+    if not isinstance(frozen, dict):
+        fail("frozen must be an object")
+    for key in ("repository", "revision", "source_tree", "content_fingerprint", "task", "budget"):
+        if key not in frozen:
+            fail(f"frozen is missing {key}")
+    source_tree = inside(base, require_string(frozen["source_tree"], "frozen.source_tree"))
+    actual = tree_fingerprint(source_tree)
+    if actual != frozen["content_fingerprint"]:
+        fail(f"frozen content fingerprint mismatch: expected {frozen['content_fingerprint']}, got {actual}")
+    budget = frozen["budget"]
+    if not isinstance(budget, dict) or not all(isinstance(budget.get(k), int) and budget[k] > 0 for k in ("wall_clock_seconds", "tool_calls")):
+        fail("frozen budget must contain positive wall_clock_seconds and tool_calls")
+    checks = brief["acceptance_checks"]
+    if not isinstance(checks, list) or not checks:
+        fail("acceptance_checks must be a non-empty array")
+    ids: set[str] = set()
+    for check in checks:
+        if not isinstance(check, dict):
+            fail("each acceptance check must be an object")
+        check_id = require_string(check.get("id"), "acceptance check id")
+        if check_id in ids:
+            fail(f"duplicate acceptance check: {check_id}")
+        ids.add(check_id)
+        require_string(check.get("path"), f"{check_id}.path")
+        terms = check.get("contains")
+        if not isinstance(terms, list) or not terms or not all(isinstance(term, str) and term for term in terms):
+            fail(f"{check_id}.contains must be a non-empty string array")
+    runs = brief["runs"]
+    if not isinstance(runs, list) or len(runs) < 2:
+        fail("runs must contain at least two matched setups")
+    run_ids: set[str] = set()
+    for run in runs:
+        if not isinstance(run, dict):
+            fail("each run must be an object")
+        run_id = require_string(run.get("id"), "run id")
+        if run_id in run_ids:
+            fail(f"duplicate run id: {run_id}")
+        run_ids.add(run_id)
+        for key in ("setup", "worktree", "action_tape", "observed"):
+            if key not in run:
+                fail(f"{run_id} is missing {key}")
+        setup = run["setup"]
+        for key in ("model", "system_prompt", "user_prompt", "skills", "memory", "tools", "review_loop", "action_modules"):
+            if key not in setup:
+                fail(f"{run_id}.setup is missing {key}")
+        for ref_key in ("system_prompt", "user_prompt"):
+            ref = inside(base, require_string(setup[ref_key], f"{run_id}.{ref_key}"))
+            if not ref.is_file():
+                fail(f"missing setup reference: {ref.relative_to(base)}")
+        for ref_key in ("skills", "memory"):
+            refs = setup[ref_key]
+            if not isinstance(refs, list):
+                fail(f"{run_id}.{ref_key} must be an array")
+            for relative in refs:
+                ref = inside(base, require_string(relative, f"{run_id}.{ref_key}"))
+                if not ref.is_file():
+                    fail(f"missing setup reference: {ref.relative_to(base)}")
+        observed = run["observed"]
+        for key in ("elapsed_seconds", "tool_calls", "human_interventions", "auth_stops", "retries"):
+            if not isinstance(observed.get(key), int) or observed[key] < 0:
+                fail(f"{run_id}.observed.{key} must be a non-negative integer")
+        if observed["elapsed_seconds"] > budget["wall_clock_seconds"]:
+            fail(f"{run_id} exceeded the frozen wall-clock budget")
+        if observed["tool_calls"] > budget["tool_calls"]:
+            fail(f"{run_id} exceeded the frozen tool-call budget")
+    golden = brief["golden_bot"]
+    if not isinstance(golden, dict) or not isinstance(golden.get("minimum_distinct_tasks"), int) or golden["minimum_distinct_tasks"] < 2:
+        fail("Golden Bot requires at least two distinct tasks")
+    if golden.get("require_no_regression") is not True:
+        fail("Golden Bot must require no regression")
+
+
+def read_tape(base: Path, run: dict[str, Any]) -> list[dict[str, Any]]:
+    tape_path = inside(base, run["action_tape"])
+    tape = load_json(tape_path)
+    if not isinstance(tape, list) or not tape:
+        fail(f"{run['id']} action tape must be a non-empty array")
+    expected_seq = 1
+    verified = []
+    tape_base = tape_path.parent
+    for event in tape:
+        if not isinstance(event, dict) or event.get("seq") != expected_seq:
+            fail(f"{run['id']} action tape sequence must start at 1 and be contiguous")
+        if event.get("category") not in ACTION_CATEGORIES:
+            fail(f"{run['id']} has unsupported action category: {event.get('category')}")
+        require_string(event.get("summary"), f"{run['id']} event summary")
+        evidence = inside(tape_base, require_string(event.get("evidence"), f"{run['id']} event evidence"))
+        if not evidence.is_file():
+            fail(f"{run['id']} event evidence is missing: {evidence}")
+        verified.append({**event, "evidence": str(evidence.relative_to(base)), "evidence_exists": True})
+        expected_seq += 1
+    return verified
+
+
+def evaluate_run(base: Path, brief: dict[str, Any], run: dict[str, Any]) -> dict[str, Any]:
+    worktree = inside(base, run["worktree"])
+    if not worktree.is_dir():
+        fail(f"{run['id']} worktree is missing")
+    checks = []
+    for check in brief["acceptance_checks"]:
+        artifact = inside(worktree, check["path"])
+        if not artifact.is_file():
+            checks.append({"id": check["id"], "pass": False, "evidence": f"missing {check['path']}"})
+            continue
+        try:
+            text = artifact.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            checks.append({"id": check["id"], "pass": False, "evidence": f"unreadable {check['path']}: {exc}"})
+            continue
+        missing = [term for term in check["contains"] if term not in text]
+        checks.append({
+            "id": check["id"],
+            "pass": not missing,
+            "evidence": f"{check['path']} contains {', '.join(check['contains'])}" if not missing else f"{check['path']} missing {', '.join(missing)}",
+        })
+    tape = read_tape(base, run)
+    passed = sum(check["pass"] for check in checks)
+    observed = run["observed"]
+    commit_receipt = observed.get("commit_receipt")
+    commit_verified = False
+    if commit_receipt:
+        commit_verified = inside(base, commit_receipt).is_file()
+        if not commit_verified:
+            fail(f"{run['id']} commit receipt is missing")
+    return {
+        "id": run["id"],
+        "setup": run["setup"],
+        "acceptance": checks,
+        "acceptance_passes": passed,
+        "acceptance_total": len(checks),
+        "verified_completion": passed == len(checks),
+        "observed": {**observed, "commit_verified": commit_verified},
+        "action_counts": {category: sum(event["category"] == category for event in tape) for category in sorted(ACTION_CATEGORIES)},
+        "action_tape": tape,
+        "popularity": run.get("popularity", {"downloads": None, "basis": "not supplied"}),
+    }
+
+
+def action_modules(results: list[dict[str, Any]], brief: dict[str, Any]) -> list[dict[str, Any]]:
+    modules = sorted({module for result in results for module in result["setup"]["action_modules"]})
+    rows = []
+    minimum = brief["golden_bot"]["minimum_distinct_tasks"]
+    for module in modules:
+        users = [result for result in results if module in result["setup"]["action_modules"]]
+        nonusers = [result for result in results if module not in result["setup"]["action_modules"]]
+        user_rate = sum(result["acceptance_passes"] for result in users) / sum(result["acceptance_total"] for result in users)
+        nonuser_rate = (
+            sum(result["acceptance_passes"] for result in nonusers) / sum(result["acceptance_total"] for result in nonusers)
+            if nonusers else None
+        )
+        rows.append({
+            "module": module,
+            "distinct_tasks": 1,
+            "matched_runs_with_module": len(users),
+            "acceptance_rate_with_module": user_rate,
+            "acceptance_rate_without_module": nonuser_rate,
+            "observed_acceptance_delta": None if nonuser_rate is None else user_rate - nonuser_rate,
+            "golden_bot": False,
+            "admission_reason": f"not eligible: 1 distinct task; requires at least {minimum} with no regression",
+        })
+    return rows
+
+
+def render_html(result: dict[str, Any]) -> str:
+    rows = []
+    for run in result["runs"]:
+        outcome = "Complete" if run["verified_completion"] else "Incomplete"
+        rows.append(
+            f"<tr><td><strong>{html.escape(run['id'])}</strong><br><small>{html.escape(run['setup']['model'])}</small></td>"
+            f"<td class={'ok' if run['verified_completion'] else 'bad'}>{outcome}</td>"
+            f"<td>{run['acceptance_passes']}/{run['acceptance_total']}</td>"
+            f"<td>{run['observed']['human_interventions']}</td><td>{run['observed']['elapsed_seconds']}s</td>"
+            f"<td>{run['observed']['tool_calls']}</td><td>{'unmeasured' if run['observed']['cost_usd'] is None else '$' + str(run['observed']['cost_usd'])}</td></tr>"
+        )
+    tapes = []
+    for run in result["runs"]:
+        events = "".join(
+            f"<li><span>{event['at_seconds']}s · {html.escape(event['category'])}</span> {html.escape(event['summary'])}<small>{html.escape(event['evidence'])}</small></li>"
+            for event in run["action_tape"]
+        )
+        tapes.append(f"<section><h3>{html.escape(run['id'])}</h3><ol class=tape>{events}</ol></section>")
+    modules = "".join(
+        f"<tr><td>{html.escape(row['module'])}</td><td>{row['distinct_tasks']}</td><td>{row['matched_runs_with_module']}</td><td>{row['acceptance_rate_with_module']:.0%}</td><td>{'n/a' if row['observed_acceptance_delta'] is None else f'{row['observed_acceptance_delta']:+.0%}'}</td><td>{html.escape(row['admission_reason'])}</td></tr>"
+        for row in result["action_modules"]
+    ) or "<tr><td colspan=6>No action modules declared.</td></tr>"
+    popularity = "".join(
+        f"<li><strong>{html.escape(run['id'])}</strong>: {'not measured' if run['popularity'].get('downloads') is None else str(run['popularity']['downloads']) + ' downloads'} <small>{html.escape(run['popularity'].get('basis', ''))}</small></li>"
+        for run in result["runs"]
+    )
+    task = html.escape(result["frozen"]["task"])
+    return f"""<!doctype html>
+<html lang=en><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>{html.escape(result['bout_id'])} · ARENA real work</title>
+<style>
+:root{{--ink:#101114;--blue:#2458ff;--pale:#eef3ff;--line:#cbd2e3}}*{{box-sizing:border-box}}html,body{{max-width:100%;overflow-x:hidden}}body{{margin:0;background:#fff;color:var(--ink);font:16px/1.45 Arial,sans-serif}}main{{width:100%;max-width:1120px;margin:auto;padding:48px 24px 90px}}header{{border-bottom:3px solid var(--ink);padding-bottom:28px}}.kicker{{color:var(--blue);font-weight:800;letter-spacing:.12em;text-transform:uppercase}}h1{{font:700 clamp(42px,8vw,86px)/.95 Georgia,serif;margin:.18em 0}}h2{{font:700 34px/1.05 Georgia,serif;margin-top:64px;overflow-wrap:anywhere}}h3{{font-size:18px}}.task{{font-size:20px;max-width:760px}}.basis{{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}}.basis div{{background:#fff;padding:18px}}.basis small,.tape small,small{{display:block;color:#5e6470}}table{{width:100%;border-collapse:collapse}}th,td{{padding:14px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}}th{{font-size:12px;text-transform:uppercase;letter-spacing:.08em}}.ok{{color:#124fa8;font-weight:800}}.bad{{color:#9a2e21;font-weight:800}}.tapes{{display:grid;grid-template-columns:1fr 1fr;gap:28px}}.tape{{padding-left:0;list-style:none;border-top:1px solid var(--line)}}.tape li{{padding:14px 0;border-bottom:1px solid var(--line)}}.tape span{{display:inline-block;min-width:125px;color:var(--blue);font-weight:700}}.note{{max-width:100%;overflow-wrap:anywhere;background:var(--pale);border-left:5px solid var(--blue);padding:18px 20px}}@media(max-width:720px){{main{{padding:28px 16px 64px}}.basis,.tapes{{grid-template-columns:1fr}}table{{display:block;max-width:100%;overflow-x:auto}}}}
+</style><main><header><div class=kicker>ARENA · real-work replay</div><h1>{html.escape(result['bout_id'])}</h1><p class=task>{task}</p><div class=basis><div><small>Frozen revision</small>{html.escape(result['frozen']['revision'])}</div><div><small>Budget</small>{result['frozen']['budget']['wall_clock_seconds']}s · {result['frozen']['budget']['tool_calls']} tool calls</div><div><small>Sample</small>{len(result['runs'])} setups · 1 task</div></div></header>
+<h2>Outcome first</h2><p class=note>This is one matched task, not a general setup leaderboard. Completion and acceptance lead. Volume, time, cost, and popularity do not prove quality.</p><table><thead><tr><th>Setup</th><th>Outcome</th><th>Checks</th><th>Human stops</th><th>Time</th><th>Tool calls</th><th>Cost</th></tr></thead><tbody>{''.join(rows)}</tbody></table>
+<h2>Meaningful action tape</h2><div class=tapes>{''.join(tapes)}</div>
+<h2>Action modules</h2><table><thead><tr><th>Module</th><th>Tasks</th><th>Runs</th><th>Acceptance</th><th>Observed delta</th><th>Golden Bot</th></tr></thead><tbody>{modules}</tbody></table>
+<h2>Popularity, separate</h2><p>Shown for context. Never used in outcome order or Golden Bot admission.</p><ul>{popularity}</ul>
+<h2>Source basis</h2><p><code>{html.escape(result['frozen']['content_fingerprint'])}</code></p><p>Every tape event above has an existing evidence file. Open <code>result.json</code> for exact paths, checks, setup manifests, and raw observed values.</p></main></html>"""
+
+
+def judge(path: Path, output: Path | None) -> tuple[dict[str, Any], Path, Path]:
+    path = path.resolve()
+    brief = load_json(path)
+    if not isinstance(brief, dict):
+        fail("work bout must contain a JSON object")
+    base = path.parent
+    validate(brief, base)
+    runs = [evaluate_run(base, brief, run) for run in brief["runs"]]
+    ordered = sorted(
+        runs,
+        key=lambda run: (
+            -int(run["verified_completion"]),
+            -run["acceptance_passes"],
+            run["observed"]["human_interventions"] + run["observed"]["auth_stops"],
+            run["id"],
+        ),
+    )
+    result = {
+        "bout_id": brief["id"],
+        "protocol": "arena-real-work-v1",
+        "frozen": brief["frozen"],
+        "sample": {"setups": len(runs), "distinct_tasks": 1},
+        "ordering_basis": ["verified_completion", "acceptance_passes", "fewer_human_or_auth_stops"],
+        "runs": ordered,
+        "action_modules": action_modules(runs, brief),
+        "limits": [
+            "One recorded fixture task cannot establish general setup quality.",
+            "Observed action-module differences are associations, not causal estimates.",
+            "Cost is unmeasured in this fixture and popularity is excluded from ordering.",
+        ],
+    }
+    out = output.resolve() if output else base / "generated"
+    out.mkdir(parents=True, exist_ok=True)
+    result_path = out / "result.json"
+    html_path = out / "results.html"
+    result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    html_path.write_text(render_html(result), encoding="utf-8")
+    return result, result_path, html_path
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("brief", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    try:
+        result, result_path, html_path = judge(args.brief, args.output)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps({
+        "bout_id": result["bout_id"],
+        "ordered_runs": [run["id"] for run in result["runs"]],
+        "result": str(result_path),
+        "replay": str(html_path),
+    }, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

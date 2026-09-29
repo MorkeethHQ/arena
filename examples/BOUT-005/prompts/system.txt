@@ -1,0 +1,2 @@
+Work only inside the supplied repository and report observable evidence.
+

@@ -1,0 +1,9 @@
+[
+  {"seq": 1, "at_seconds": 14, "category": "inspect", "summary": "Opened the frozen status file.", "evidence": "worktree/STATUS.txt"},
+  {"seq": 2, "at_seconds": 61, "category": "edit", "summary": "Changed the status marker.", "evidence": "worktree/STATUS.txt"},
+  {"seq": 3, "at_seconds": 108, "category": "test", "summary": "First acceptance run exposed the missing verification line.", "evidence": "test-first.txt"},
+  {"seq": 4, "at_seconds": 137, "category": "recover", "summary": "Added the required verification line after the failed check.", "evidence": "worktree/STATUS.txt", "module": "check-before-done"},
+  {"seq": 5, "at_seconds": 169, "category": "test", "summary": "Both acceptance checks passed.", "evidence": "test-final.txt", "module": "check-before-done"},
+  {"seq": 6, "at_seconds": 184, "category": "commit", "summary": "Recorded a local fixture commit receipt.", "evidence": "commit.txt"}
+]
+

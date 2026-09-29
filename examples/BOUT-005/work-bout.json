@@ -1,0 +1,68 @@
+{
+  "id": "BOUT-005",
+  "frozen": {
+    "repository": "fixture://arena/status-repo",
+    "revision": "status-repo-v1",
+    "source_tree": "frozen",
+    "content_fingerprint": "sha256:0f666b1083c8e33b854424f1307d76caa330460e6d7efb0b12de9a80f603f20d",
+    "task": "Change STATUS.txt from TODO to DONE and add the exact line: verified by tests",
+    "budget": {"wall_clock_seconds": 600, "tool_calls": 12}
+  },
+  "acceptance_checks": [
+    {"id": "status_done", "path": "STATUS.txt", "contains": ["status: DONE"]},
+    {"id": "verification_line", "path": "STATUS.txt", "contains": ["verified by tests"]}
+  ],
+  "runs": [
+    {
+      "id": "setup-review-loop",
+      "setup": {
+        "model": "recorded-fixture-model",
+        "system_prompt": "prompts/system.txt",
+        "user_prompt": "prompts/task.txt",
+        "skills": ["skills/check-before-done.md"],
+        "memory": ["memory/project.md"],
+        "tools": ["read", "edit", "test"],
+        "review_loop": "Run acceptance checks once after editing and repair a failed check.",
+        "action_modules": ["check-before-done"]
+      },
+      "worktree": "runs/setup-review-loop/worktree",
+      "action_tape": "runs/setup-review-loop/action-tape.json",
+      "observed": {
+        "elapsed_seconds": 184,
+        "tool_calls": 6,
+        "human_interventions": 0,
+        "auth_stops": 0,
+        "retries": 1,
+        "cost_usd": null,
+        "commit_receipt": "runs/setup-review-loop/commit.txt"
+      },
+      "popularity": {"downloads": null, "basis": "not measured for this fixture"}
+    },
+    {
+      "id": "setup-direct-edit",
+      "setup": {
+        "model": "recorded-fixture-model",
+        "system_prompt": "prompts/system.txt",
+        "user_prompt": "prompts/task.txt",
+        "skills": [],
+        "memory": ["memory/project.md"],
+        "tools": ["read", "edit"],
+        "review_loop": "No post-edit acceptance run recorded.",
+        "action_modules": []
+      },
+      "worktree": "runs/setup-direct-edit/worktree",
+      "action_tape": "runs/setup-direct-edit/action-tape.json",
+      "observed": {
+        "elapsed_seconds": 97,
+        "tool_calls": 3,
+        "human_interventions": 0,
+        "auth_stops": 0,
+        "retries": 0,
+        "cost_usd": null,
+        "commit_receipt": null
+      },
+      "popularity": {"downloads": null, "basis": "not measured for this fixture"}
+    }
+  ],
+  "golden_bot": {"minimum_distinct_tasks": 2, "require_no_regression": true}
+}

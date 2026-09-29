@@ -11,6 +11,14 @@ Run both smoke bouts: `python3 -m unittest discover -s tests -v`
 Results are written beside each brief under `generated/`; no network or build step is required.
 Protocol: [SPEC.md](SPEC.md) · machine contract: [spec/bout.schema.json](spec/bout.schema.json)
 
+## Real-work replay
+
+BOUT-005 is a separate real-work protocol: the same frozen repository, task,
+budget, and acceptance checks across complete setup manifests. It records a
+source-bound action tape and compares outcomes without a productivity score.
+Run `python3 scripts/judge_work_bout examples/BOUT-005/work-bout.json` and open
+`examples/BOUT-005/generated/results.html`. See [WORK-BOUT.md](WORK-BOUT.md).
+
 ## Produce the public kit
 
 Run `make card BOUT=examples/BOUT-002/bout.json`. The command judges the bout,

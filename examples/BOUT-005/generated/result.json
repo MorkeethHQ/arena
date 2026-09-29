@@ -1,0 +1,238 @@
+{
+  "bout_id": "BOUT-005",
+  "protocol": "arena-real-work-v1",
+  "frozen": {
+    "repository": "fixture://arena/status-repo",
+    "revision": "status-repo-v1",
+    "source_tree": "frozen",
+    "content_fingerprint": "sha256:0f666b1083c8e33b854424f1307d76caa330460e6d7efb0b12de9a80f603f20d",
+    "task": "Change STATUS.txt from TODO to DONE and add the exact line: verified by tests",
+    "budget": {
+      "wall_clock_seconds": 600,
+      "tool_calls": 12
+    }
+  },
+  "sample": {
+    "setups": 2,
+    "distinct_tasks": 1
+  },
+  "ordering_basis": [
+    "verified_completion",
+    "acceptance_passes",
+    "fewer_human_or_auth_stops"
+  ],
+  "runs": [
+    {
+      "id": "setup-review-loop",
+      "setup": {
+        "model": "recorded-fixture-model",
+        "system_prompt": "prompts/system.txt",
+        "user_prompt": "prompts/task.txt",
+        "skills": [
+          "skills/check-before-done.md"
+        ],
+        "memory": [
+          "memory/project.md"
+        ],
+        "tools": [
+          "read",
+          "edit",
+          "test"
+        ],
+        "review_loop": "Run acceptance checks once after editing and repair a failed check.",
+        "action_modules": [
+          "check-before-done"
+        ]
+      },
+      "acceptance": [
+        {
+          "id": "status_done",
+          "pass": true,
+          "evidence": "STATUS.txt contains status: DONE"
+        },
+        {
+          "id": "verification_line",
+          "pass": true,
+          "evidence": "STATUS.txt contains verified by tests"
+        }
+      ],
+      "acceptance_passes": 2,
+      "acceptance_total": 2,
+      "verified_completion": true,
+      "observed": {
+        "elapsed_seconds": 184,
+        "tool_calls": 6,
+        "human_interventions": 0,
+        "auth_stops": 0,
+        "retries": 1,
+        "cost_usd": null,
+        "commit_receipt": "runs/setup-review-loop/commit.txt",
+        "commit_verified": true
+      },
+      "action_counts": {
+        "auth": 0,
+        "commit": 1,
+        "edit": 1,
+        "human": 0,
+        "inspect": 1,
+        "recover": 1,
+        "test": 2
+      },
+      "action_tape": [
+        {
+          "seq": 1,
+          "at_seconds": 14,
+          "category": "inspect",
+          "summary": "Opened the frozen status file.",
+          "evidence": "runs/setup-review-loop/worktree/STATUS.txt",
+          "evidence_exists": true
+        },
+        {
+          "seq": 2,
+          "at_seconds": 61,
+          "category": "edit",
+          "summary": "Changed the status marker.",
+          "evidence": "runs/setup-review-loop/worktree/STATUS.txt",
+          "evidence_exists": true
+        },
+        {
+          "seq": 3,
+          "at_seconds": 108,
+          "category": "test",
+          "summary": "First acceptance run exposed the missing verification line.",
+          "evidence": "runs/setup-review-loop/test-first.txt",
+          "evidence_exists": true
+        },
+        {
+          "seq": 4,
+          "at_seconds": 137,
+          "category": "recover",
+          "summary": "Added the required verification line after the failed check.",
+          "evidence": "runs/setup-review-loop/worktree/STATUS.txt",
+          "module": "check-before-done",
+          "evidence_exists": true
+        },
+        {
+          "seq": 5,
+          "at_seconds": 169,
+          "category": "test",
+          "summary": "Both acceptance checks passed.",
+          "evidence": "runs/setup-review-loop/test-final.txt",
+          "module": "check-before-done",
+          "evidence_exists": true
+        },
+        {
+          "seq": 6,
+          "at_seconds": 184,
+          "category": "commit",
+          "summary": "Recorded a local fixture commit receipt.",
+          "evidence": "runs/setup-review-loop/commit.txt",
+          "evidence_exists": true
+        }
+      ],
+      "popularity": {
+        "downloads": null,
+        "basis": "not measured for this fixture"
+      }
+    },
+    {
+      "id": "setup-direct-edit",
+      "setup": {
+        "model": "recorded-fixture-model",
+        "system_prompt": "prompts/system.txt",
+        "user_prompt": "prompts/task.txt",
+        "skills": [],
+        "memory": [
+          "memory/project.md"
+        ],
+        "tools": [
+          "read",
+          "edit"
+        ],
+        "review_loop": "No post-edit acceptance run recorded.",
+        "action_modules": []
+      },
+      "acceptance": [
+        {
+          "id": "status_done",
+          "pass": true,
+          "evidence": "STATUS.txt contains status: DONE"
+        },
+        {
+          "id": "verification_line",
+          "pass": false,
+          "evidence": "STATUS.txt missing verified by tests"
+        }
+      ],
+      "acceptance_passes": 1,
+      "acceptance_total": 2,
+      "verified_completion": false,
+      "observed": {
+        "elapsed_seconds": 97,
+        "tool_calls": 3,
+        "human_interventions": 0,
+        "auth_stops": 0,
+        "retries": 0,
+        "cost_usd": null,
+        "commit_receipt": null,
+        "commit_verified": false
+      },
+      "action_counts": {
+        "auth": 0,
+        "commit": 1,
+        "edit": 1,
+        "human": 0,
+        "inspect": 1,
+        "recover": 0,
+        "test": 0
+      },
+      "action_tape": [
+        {
+          "seq": 1,
+          "at_seconds": 11,
+          "category": "inspect",
+          "summary": "Opened the frozen status file.",
+          "evidence": "runs/setup-direct-edit/worktree/STATUS.txt",
+          "evidence_exists": true
+        },
+        {
+          "seq": 2,
+          "at_seconds": 58,
+          "category": "edit",
+          "summary": "Changed TODO to DONE.",
+          "evidence": "runs/setup-direct-edit/worktree/STATUS.txt",
+          "evidence_exists": true
+        },
+        {
+          "seq": 3,
+          "at_seconds": 97,
+          "category": "commit",
+          "summary": "Declared the edit complete without a recorded acceptance run.",
+          "evidence": "runs/setup-direct-edit/worktree/STATUS.txt",
+          "evidence_exists": true
+        }
+      ],
+      "popularity": {
+        "downloads": null,
+        "basis": "not measured for this fixture"
+      }
+    }
+  ],
+  "action_modules": [
+    {
+      "module": "check-before-done",
+      "distinct_tasks": 1,
+      "matched_runs_with_module": 1,
+      "acceptance_rate_with_module": 1.0,
+      "acceptance_rate_without_module": 0.5,
+      "observed_acceptance_delta": 0.5,
+      "golden_bot": false,
+      "admission_reason": "not eligible: 1 distinct task; requires at least 2 with no regression"
+    }
+  ],
+  "limits": [
+    "One recorded fixture task cannot establish general setup quality.",
+    "Observed action-module differences are associations, not causal estimates.",
+    "Cost is unmeasured in this fixture and popularity is excluded from ordering."
+  ]
+}
