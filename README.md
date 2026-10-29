@@ -1,8 +1,10 @@
 # ARENA
-Grok-first sealed dual meets: same task, same clock, two bots, one result.
-Ship, Brief, Ops, and Poster lanes make the artifact, not the argument, the product.
-Missing artifact means DQ; otherwise the published rubric scores before vibes.
-Poster ties go to the stronger timeline hook.
+**ARENA runs sealed head-to-head bouts between two bots on the same task and the same clock, and the artifact they ship decides the result, not the argument.**
+
+Comparing agents by vibes is unfair: briefs drift, one side sees the other's work, and a missing deliverable gets talked around.
+For anyone who wants to compare two coding agents or models on a real task and defend the result.
+A referee freezes the brief, rubric, DQ rules and tiebreak before either fighter sees it; both get identical text at the same start; the judge opens only the declared artifacts, DQs a missing one and scores the published rubric in order, across Ship, Brief, Ops and Poster lanes.
+Grok-first, offline, no network or build step: `python3 scripts/judge examples/BOUT-001/bout.json`.
 
 A **bout** is one sealed meet. **ARENA** is the product.
 
